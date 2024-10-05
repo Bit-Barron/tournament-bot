@@ -38,6 +38,29 @@ export class JoinTournament {
       await interaction.deferReply();
 
       const result = await prisma.$transaction(async (prisma) => {
+        const existingParticipation = await prisma.tournament.findFirst({
+          where: {
+            participants: {
+              some: {
+                discord_id: interaction.user.id,
+              },
+            },
+            status: {
+              in: ["PENDING", "ONGOING"],
+            },
+          },
+          select: {
+            id: true,
+            tournament_name: true,
+          },
+        });
+
+        if (existingParticipation) {
+          throw new Error(
+            `You are already participating in tournament "${existingParticipation.tournament_name}" (ID: ${existingParticipation.id}). You can only join one tournament at a time.`
+          );
+        }
+
         const tournament = await prisma.tournament.findUnique({
           where: { id: tournamentId },
           include: { participants: true },
@@ -49,14 +72,6 @@ export class JoinTournament {
 
         if (tournament.participants.length >= tournament.max_participants) {
           throw new Error("This tournament is full.");
-        }
-
-        const existingParticipant = tournament.participants.find(
-          (p: { discord_id: string }) => p.discord_id === interaction.user.id
-        );
-
-        if (existingParticipant) {
-          throw new Error("You have already joined this tournament.");
         }
 
         let user = await prisma.user.findUnique({
