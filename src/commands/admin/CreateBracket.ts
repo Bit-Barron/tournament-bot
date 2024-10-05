@@ -1,10 +1,11 @@
-import { Discord, Slash, SlashOption } from "discordx";
+import { Discord, Guard, Slash, SlashOption } from "discordx";
 import prisma from "../../lib/prisma.js";
 import {
   ApplicationCommandOptionType,
   CommandInteraction,
   EmbedBuilder,
 } from "discord.js";
+import { AdminOnly } from "../../guards/AdminOnly.js";
 
 @Discord()
 export class GenerateBracket {
@@ -12,6 +13,7 @@ export class GenerateBracket {
     name: "generate_bracket",
     description: "Generate a bracket for a tournament",
   })
+  @Guard(AdminOnly())
   async generateBracket(
     @SlashOption({
       name: "tournament_id",
