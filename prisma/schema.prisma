@@ -21,13 +21,14 @@ model User {
 }
 
 model Tournament {
-  id              Int               @id @default(autoincrement())
-  tournament_name String
-  start_date      DateTime
-  game_type       GameType
-  status          TournamentStatus  @default(PENDING)
-  participants    User[]            @relation("UserTournaments")
-  max_participants Int
+  id                Int               @id @default(autoincrement())
+  tournament_name   String
+  start_date        DateTime
+  game_type         GameType
+  status            TournamentStatus  @default(PENDING)
+  participants      User[]            @relation("UserTournaments")
+  max_participants  Int
+  hostet_by         String             
 }
 
 enum GameType {

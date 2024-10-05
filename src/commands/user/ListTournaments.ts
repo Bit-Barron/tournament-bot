@@ -1,6 +1,6 @@
 import { Discord, Slash } from "discordx";
+import { CommandInteraction, EmbedBuilder } from "discord.js";
 import prisma from "../../lib/prisma.js";
-import { CommandInteraction } from "discord.js";
 
 @Discord()
 export class ListTournaments {
@@ -8,21 +8,42 @@ export class ListTournaments {
     name: "tournament-list",
     description: "List all tournaments",
   })
-  async listTournaments(interaction: CommandInteraction) {
-    try {
-      const tournaments = await prisma.tournament.findMany();
+  async listTournaments(interaction: CommandInteraction): Promise<void> {
+    await interaction.deferReply();
 
-      if (!tournaments) {
-        await interaction.reply("No tournaments found");
+    try {
+      const tournaments = await prisma.tournament.findMany({
+        orderBy: { tournament_name: "asc" },
+      });
+
+      if (tournaments.length === 0) {
+        await interaction.editReply(
+          "No tournaments found. Why not create one?"
+        );
+        return;
       }
-      await interaction.reply(
-        `Tournaments:${tournaments
-          .map((t) => `${t.id}: ${t.tournament_name}`)
-          .join("\n")}
-        `
-      );
+
+      const embed = new EmbedBuilder()
+        .setColor("#0099ff")
+        .setTitle("Tournament List")
+        .setDescription("Here are all the available tournaments:")
+        .addFields(
+          tournaments.map((t) => ({
+            name: t.tournament_name,
+            value: `ID: ${t.id}`,
+            inline: true,
+          }))
+        )
+        .setTimestamp()
+        .setFooter({ text: "Use /tournament-info [id] for more details" });
+
+      await interaction.editReply({ embeds: [embed] });
     } catch (error) {
-      await interaction.reply(`Error listing tournaments: ${error}`);
+      console.error("Error listing tournaments:", error);
+      await interaction.editReply({
+        content:
+          "An error occurred while fetching the tournament list. Please try again later.",
+      });
     }
   }
 }
