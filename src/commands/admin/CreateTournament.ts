@@ -1,9 +1,15 @@
 import { Discord, Slash, SlashChoice, SlashOption } from "discordx";
-import { ApplicationCommandOptionType, CommandInteraction } from "discord.js";
+import {
+  ApplicationCommandOptionType,
+  CommandInteraction,
+  EmbedBuilder,
+} from "discord.js";
 import prisma from "../../lib/prisma.js";
 
+type GameType = "SOLO" | "DUO" | "TRIOS";
+
 @Discord()
-export class CreateTournament {
+export class TournamentCreate {
   @Slash({
     name: "tournament-create",
     description: "Create a new tournament",
@@ -16,7 +22,6 @@ export class CreateTournament {
       required: true,
     })
     tournamentName: string,
-
     @SlashOption({
       name: "start_date",
       description: "The start date of the tournament (YYYY-MM-DD)",
@@ -24,7 +29,6 @@ export class CreateTournament {
       required: true,
     })
     startDate: string,
-
     @SlashChoice({ name: "Solo", value: "SOLO" })
     @SlashChoice({ name: "Duo", value: "DUO" })
     @SlashChoice({ name: "Trios", value: "TRIOS" })
@@ -35,10 +39,14 @@ export class CreateTournament {
       required: true,
     })
     gameType: "SOLO" | "DUO" | "TRIOS",
-
     interaction: CommandInteraction
   ) {
     try {
+      const normalizedGameType = gameType.toUpperCase() as GameType;
+      if (!["SOLO", "DUO", "TRIOS"].includes(normalizedGameType)) {
+        throw new Error("Invalid game type. Must be SOLO, DUO, or TRIOS.");
+      }
+
       const parsedDate = new Date(startDate);
       if (isNaN(parsedDate.getTime())) {
         throw new Error("Invalid date format. Please use YYYY-MM-DD.");
@@ -47,24 +55,41 @@ export class CreateTournament {
       const tournament = await prisma.tournament.create({
         data: {
           tournament_name: tournamentName,
-          game_type: gameType,
           start_date: parsedDate,
-          status: "PENDING",
+          game_type: normalizedGameType,
         },
       });
-      await interaction.reply(
-        `Tournament created successfully!\n` +
-          `Name: ${tournament.tournament_name}\n` +
-          `Start Date: ${tournament.start_date.toISOString().split("T")[0]}\n` +
-          `Game Type: ${tournament.game_type}\n` +
-          `Tournament ID: ${tournament.id}`
-      );
+
+      const embed = new EmbedBuilder()
+        .setColor("#00ff00")
+        .setTitle("🏆 New Tournament Created! 🏆")
+        .setDescription(`**${tournamentName}** has been successfully created.`)
+        .addFields(
+          { name: "Tournament ID", value: `${tournament.id}`, inline: true },
+          { name: "Game Type", value: normalizedGameType, inline: true },
+          { name: "Start Date", value: startDate, inline: true },
+          { name: "Status", value: "PENDING", inline: true }
+        )
+        .addFields(
+          {
+            name: "How to Join",
+            value: `Use \`/join tournament_id:${tournament.id}\` to participate!`,
+          },
+          {
+            name: "Starting the Tournament",
+            value: `Organizers can use \`/tournament-start tournament_id:${tournament.id}\` when ready to begin.`,
+          }
+        )
+        .setFooter({ text: "Good luck to all participants!" })
+        .setTimestamp();
+
+      await interaction.reply({ embeds: [embed] });
     } catch (error) {
       console.error("Error creating tournament:", error);
-      await interaction.reply(
-        "An error occurred while creating the tournament. " +
-          (error instanceof Error ? error.message : "Please try again later.")
-      );
+      await interaction.reply({
+        content: `Error creating tournament: ${error}`,
+        ephemeral: true,
+      });
     }
   }
 }
