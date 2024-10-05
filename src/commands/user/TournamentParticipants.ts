@@ -1,4 +1,4 @@
-import { Discord, Slash, SlashOption } from "discordx";
+import { Discord, Guard, Slash, SlashOption } from "discordx";
 import {
   ApplicationCommandOptionType,
   CommandInteraction,
@@ -8,6 +8,7 @@ import {
   ButtonStyle,
 } from "discord.js";
 import prisma from "../../lib/prisma.js";
+import { ChannelOnly } from "../../guards/ChanelOnly.js";
 
 const PARTICIPANTS_PER_PAGE = 10;
 
@@ -17,6 +18,7 @@ export class TournamentParticipants {
     name: "tournament-participants",
     description: "List all participants in a tournament",
   })
+  @Guard(ChannelOnly("TOURNAMENT_INFO_CHANNEL"))
   async listParticipants(
     @SlashOption({
       name: "tournament_id",
