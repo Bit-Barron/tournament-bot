@@ -40,7 +40,7 @@ export class CancelTournament {
 
       await prisma.tournament.update({
         where: { id: tournamentId },
-        data: { status: "COMPLETED" },
+        data: { status: "CANCELED" },
       });
 
       const embed = new EmbedBuilder()
