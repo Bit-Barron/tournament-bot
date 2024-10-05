@@ -9,6 +9,7 @@ CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
     "username" TEXT NOT NULL,
     "brawlstars_id" TEXT NOT NULL,
+    "discord_id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -34,6 +35,9 @@ CREATE TABLE "_UserTournaments" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_brawlstars_id_key" ON "User"("brawlstars_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_discord_id_key" ON "User"("discord_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_UserTournaments_AB_unique" ON "_UserTournaments"("A", "B");

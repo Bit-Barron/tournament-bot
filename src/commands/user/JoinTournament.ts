@@ -33,18 +33,31 @@ export class JoinTournament {
       const result = await prisma.$transaction(async (prisma) => {
         const tournament = await prisma.tournament.findUnique({
           where: { id: tournamentId },
+          include: { participants: true },
         });
 
         if (!tournament) {
           throw new Error(`Tournament with ID ${tournamentId} not found.`);
         }
 
+        const existingParticipant = tournament.participants.find(
+          (p: { discord_id: string }) => p.discord_id === interaction.user.id
+        );
+
+        if (existingParticipant) {
+          throw new Error("You have already joined this tournament.");
+        }
+
         const user = await prisma.user.upsert({
           where: { brawlstars_id: brawlstarsId },
-          update: { username: userName },
+          update: {
+            username: userName,
+            discord_id: interaction.user.id,
+          },
           create: {
             brawlstars_id: brawlstarsId,
             username: userName,
+            discord_id: interaction.user.id,
           },
         });
 
