@@ -37,7 +37,7 @@ export class JoinTournament {
     try {
       await interaction.deferReply();
 
-      const result = await prisma.$transaction(async (prisma) => {
+      const result = await prisma.$transaction(async (prisma: any) => {
         const tournament = await prisma.tournament.findUnique({
           where: { id: tournamentId },
           include: { participants: true },
@@ -52,7 +52,7 @@ export class JoinTournament {
         }
 
         const existingParticipant = tournament.participants.find(
-          (p) => p.discord_id === interaction.user.id
+          (p: { discord_id: string; }) => p.discord_id === interaction.user.id
         );
 
         if (existingParticipant) {

@@ -30,7 +30,7 @@ export class ListTournaments {
         .setTitle("Tournament List")
         .setDescription("Here are all the available tournaments:")
         .addFields(
-          tournaments.map((t) => ({
+          tournaments.map((t: { tournament_name: any; id: any; }) => ({
             name: t.tournament_name,
             value: `ID: ${t.id}`,
             inline: true,

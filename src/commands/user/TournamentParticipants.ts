@@ -41,7 +41,7 @@ export class TournamentParticipants {
         throw new Error(`Tournament with ID ${tournamentId} not found.`);
       }
 
-      const participants = tournament.participants.map((participant, index) => {
+      const participants = tournament.participants.map((participant: { username: any; brawlstars_id: any; }, index: number) => {
         return `${index + 1}. ${participant.username} (${
           participant.brawlstars_id
         })`;
