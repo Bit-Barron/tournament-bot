@@ -5,7 +5,7 @@ import prisma from "../../lib/prisma.js";
 @Discord()
 export class CancelTournament {
   @Slash({
-    name: "cancel",
+    name: "tournament-cancel",
     description: "Cancel a tournament",
   })
   async cancelTournament(
@@ -38,8 +38,6 @@ export class CancelTournament {
           status: "COMPLETED",
         },
       });
-
-      
     } catch (error) {
       await interaction.reply(`Error cancelling tournament: ${error}`);
     }

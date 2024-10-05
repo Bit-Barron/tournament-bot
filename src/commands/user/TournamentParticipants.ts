@@ -5,7 +5,7 @@ import prisma from "../../lib/prisma.js";
 @Discord()
 export class TournamentParticipants {
   @Slash({
-    name: "participants",
+    name: "tournament-participants",
     description: "List all participants in a tournament",
   })
   async listParticipants(

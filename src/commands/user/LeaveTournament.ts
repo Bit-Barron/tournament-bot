@@ -5,7 +5,7 @@ import { ApplicationCommandOptionType, CommandInteraction } from "discord.js";
 @Discord()
 export class LeaveTournament {
   @Slash({
-    name: "leave",
+    name: "leave-tournament",
     description: "Leave a tournament",
   })
   async leaveTournament(

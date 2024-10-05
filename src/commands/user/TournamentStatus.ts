@@ -5,7 +5,7 @@ import { ApplicationCommandOptionType, CommandInteraction } from "discord.js";
 @Discord()
 export class TournamentStatus {
   @Slash({
-    name: "status",
+    name: "tournament-status",
     description: "Get the status of a tournament",
   })
   async getTournamentStatus(
