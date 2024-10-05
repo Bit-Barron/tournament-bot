@@ -30,18 +30,25 @@ export class JoinTournament {
     interaction: CommandInteraction
   ) {
     try {
-      let user = await prisma.user.findUnique({
-        where: { brawlstars_id: brawlstarsId },
+      const tournament = await prisma.tournament.findUnique({
+        where: { id: tournamentId },
       });
 
-      if (!user) {
-        user = await prisma.user.create({
-          data: {
-            brawlstars_id: brawlstarsId,
-            username: userName,
-          },
-        });
+      if (!tournament) {
+        await interaction.reply(
+          `Error: Tournament with ID ${tournamentId} not found.`
+        );
+        return;
       }
+
+      let user = await prisma.user.upsert({
+        where: { brawlstars_id: brawlstarsId },
+        update: { username: userName },
+        create: {
+          brawlstars_id: brawlstarsId,
+          username: userName,
+        },
+      });
 
       const updatedTournament = await prisma.tournament.update({
         where: { id: tournamentId },
@@ -61,7 +68,10 @@ export class JoinTournament {
         `Successfully joined the tournament. There are now ${participantCount} participant(s).`
       );
     } catch (error) {
-      await interaction.reply(`Error joining tournament: ${error}`);
+      console.error("Error joining tournament:", error);
+      await interaction.reply(
+        `Error joining tournament. Please try again later.`
+      );
     }
   }
 }
