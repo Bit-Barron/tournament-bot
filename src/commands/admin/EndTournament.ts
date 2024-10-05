@@ -6,6 +6,7 @@ import {
 } from "discord.js";
 import prisma from "../../lib/prisma.js";
 import { AdminOnly } from "../../guards/AdminOnly.js";
+import { calculateDuration } from "../../lib/helpers.js";
 
 @Discord()
 export class EndTournament {
@@ -38,13 +39,13 @@ export class EndTournament {
         throw new Error("This tournament has already ended");
       }
 
-      const updatedTournament = await prisma.tournament.update({
+      await prisma.tournament.update({
         where: { id: tournamentId },
         data: { status: "COMPLETED" },
       });
 
       const embed = new EmbedBuilder()
-        .setColor("#FFD700") // Gold color
+        .setColor("#FFD700")
         .setTitle("🏆 Tournament Ended! 🏆")
         .setDescription(
           `**${tournament.tournament_name}** has officially concluded.`
@@ -60,7 +61,7 @@ export class EndTournament {
           },
           {
             name: "Duration",
-            value: `${this.calculateDuration(tournament.start_date)}`,
+            value: `${calculateDuration(tournament.start_date)}`,
             inline: true,
           }
         )
@@ -87,15 +88,5 @@ export class EndTournament {
         ephemeral: true,
       });
     }
-  }
-
-  private calculateDuration(startDate: Date): string {
-    const endDate = new Date();
-    const durationMs = endDate.getTime() - startDate.getTime();
-    const days = Math.floor(durationMs / (1000 * 60 * 60 * 24));
-    const hours = Math.floor(
-      (durationMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-    );
-    return `${days} days, ${hours} hours`;
   }
 }
