@@ -4,7 +4,7 @@ import { CommandInteraction } from "discord.js";
 export function ChannelOnly(
   channelEnvKey: string
 ): GuardFunction<CommandInteraction | SimpleCommandMessage> {
-  return async (arg, next) => {
+  return async (arg, client, next) => {
     const interaction = arg instanceof CommandInteraction ? arg : arg.message;
     const channelId = process.env[channelEnvKey];
 
@@ -33,5 +33,6 @@ export function ChannelOnly(
     }
 
     console.log("Channel check passed, calling next()");
+    await next();
   };
 }
