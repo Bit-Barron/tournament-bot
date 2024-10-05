@@ -23,7 +23,7 @@ export class CreateTournament {
   async createTournament(
     @SlashOption({
       name: "tournament_name",
-      description: "The name of the tournament (max 10 words)",
+      description: "The name of the tournament (max 50 characters)",
       type: ApplicationCommandOptionType.String,
       required: true,
     })
@@ -59,23 +59,24 @@ export class CreateTournament {
     await interaction.deferReply();
 
     try {
-      if (tournamentName.split(/\s+/).length > 10) {
-        throw new Error("Tournament name cannot exceed 10 words.");
+      // Validate tournament name
+      if (tournamentName.length > 50) {
+        throw new Error("Tournament name cannot exceed 50 characters.");
       }
 
-      if (maxParticipants < 1 || maxParticipants > 50) {
-        throw new Error("Max participants must be between 1 and 50.");
+      // Validate max participants
+      if (maxParticipants < 1 || maxParticipants > 50 || !Number.isInteger(maxParticipants)) {
+        throw new Error("Max participants must be an integer between 1 and 50.");
       }
 
+      // Validate start date
       let parsedDate: Date;
       if (startDate.toLowerCase() === "today") {
         parsedDate = new Date();
       } else {
         const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
         if (!dateRegex.test(startDate)) {
-          throw new Error(
-            "Invalid date format. Please use YYYY-MM-DD or 'today'."
-          );
+          throw new Error("Invalid date format. Please use YYYY-MM-DD or 'today'.");
         }
         parsedDate = new Date(startDate);
         if (isNaN(parsedDate.getTime())) {
