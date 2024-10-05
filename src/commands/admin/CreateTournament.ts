@@ -23,7 +23,7 @@ export class CreateTournament {
   async createTournament(
     @SlashOption({
       name: "tournament_name",
-      description: "The name of the tournament",
+      description: "The name of the tournament (max 10 words)",
       type: ApplicationCommandOptionType.String,
       required: true,
     })
@@ -40,7 +40,7 @@ export class CreateTournament {
 
     @SlashOption({
       name: "max_participants",
-      description: "The maximum number of participants allowed",
+      description: "The maximum number of participants allowed (1-50)",
       type: ApplicationCommandOptionType.Integer,
       required: true,
     })
@@ -59,6 +59,16 @@ export class CreateTournament {
     await interaction.deferReply();
 
     try {
+      // Validate tournament name
+      if (tournamentName.split(/\s+/).length > 10) {
+        throw new Error("Tournament name cannot exceed 10 words.");
+      }
+
+      // Validate max participants
+      if (maxParticipants < 1 || maxParticipants > 50) {
+        throw new Error("Max participants must be between 1 and 50.");
+      }
+
       // Validate and parse the start date
       let parsedDate: Date;
       if (startDate.toLowerCase() === "today") {
