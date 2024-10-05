@@ -39,7 +39,14 @@ export class TournamentCreate {
       required: true,
     })
     gameType: "SOLO" | "DUO" | "TRIOS",
-    interaction: CommandInteraction
+    interaction: CommandInteraction,
+    @SlashOption({
+      name: "max_participants",
+      description: "The maximum number of participants",
+      type: ApplicationCommandOptionType.Integer,
+      required: true,
+    })
+    maxParticipants: number
   ) {
     try {
       const normalizedGameType = gameType.toUpperCase() as GameType;
@@ -57,6 +64,7 @@ export class TournamentCreate {
           tournament_name: tournamentName,
           start_date: parsedDate,
           game_type: normalizedGameType,
+          MAX_PARTICIPANTS: maxParticipants,
         },
       });
 

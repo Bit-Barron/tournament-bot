@@ -40,6 +40,10 @@ export class JoinTournament {
           throw new Error(`Tournament with ID ${tournamentId} not found.`);
         }
 
+        if (tournament.participants.length >= 1) {
+          throw new Error("This tournament is full.");
+        }
+
         const existingParticipant = tournament.participants.find(
           (p) => p.discord_id === interaction.user.id
         );
