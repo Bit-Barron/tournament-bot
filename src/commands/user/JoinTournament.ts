@@ -33,6 +33,11 @@ export class JoinTournament {
         data: {
           brawlstars_id: brawlstarsId,
           username: userName,
+          tournaments: {
+            connect: {
+              id: parseInt(tournamentId),
+            },
+          },
         },
       });
     } catch (err) {
