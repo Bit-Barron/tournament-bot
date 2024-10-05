@@ -8,10 +8,6 @@ export function ChannelOnly(
     const interaction = arg instanceof CommandInteraction ? arg : arg.message;
     const channelId = process.env[channelEnvKey];
 
-    console.log(`ChannelOnly guard for ${channelEnvKey}`);
-    console.log(`Expected channel ID: ${channelId}`);
-    console.log(`Actual channel ID: ${interaction.channelId}`);
-
     if (!channelId) {
       console.error(
         `Channel ID for ${channelEnvKey} is not set in environment variables`
