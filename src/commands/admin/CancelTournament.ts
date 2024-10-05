@@ -35,7 +35,7 @@ export class CancelTournament {
           id: parseInt(tournamentId),
         },
         data: {
-          status: "CANCELLED",
+          status: "COMPLETED",
         },
       });
 

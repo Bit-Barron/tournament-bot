@@ -8,24 +8,31 @@ datasource db {
 }
 
 model User {
-  id            Int      @id @default(autoincrement())
-  username      String?
-  brawlstars_id String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            Int         @id @default(autoincrement())
+  username      String
+  brawlstars_id String      @unique
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  tournaments   Tournament[] @relation("UserTournaments")
 }
 
 model Tournament {
+  id              Int               @id @default(autoincrement())
   tournament_name String
   start_date      DateTime
-  game_type       String
-  id              Int      @id @default(autoincrement())
-  status          TournamentStatus @default(PENDING)
+  game_type       GameType
+  status          TournamentStatus  @default(PENDING)
+  participants    User[]            @relation("UserTournaments")
+}
+
+enum GameType {
+  SOLO
+  DUO
+  TRIOS
 }
 
 enum TournamentStatus {
   PENDING
   ONGOING
   COMPLETED
-  CANCELLED
 }
