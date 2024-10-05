@@ -8,7 +8,8 @@
     "start": "npx prisma migrate deploy && cross-env NODE_ENV=production node dist/main.js",
     "dev": "nodemon --ignore './**/*.json' --exec node --no-warnings --loader ts-node/esm src/main.ts",
     "prettier": "prettier --ignore-path .gitignore -w ./src",
-    "build": "tsc"
+    "build": "tsc",
+    "prisma": "npx prisma migrate dev --name init && npx prisma generate"
   },
   "keywords": [],
   "author": "",
