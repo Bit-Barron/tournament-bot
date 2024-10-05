@@ -39,10 +39,19 @@ export class EndTournament {
         throw new Error("This tournament has already ended");
       }
 
+      const now = new Date();
+      const startDate = new Date(tournament.start_date);
+
+      if (now < startDate) {
+        throw new Error("Cannot end a tournament that hasn't started yet");
+      }
+
       await prisma.tournament.update({
         where: { id: tournamentId },
         data: { status: "COMPLETED" },
       });
+
+      const duration = calculateDuration(tournament.start_date);
 
       const embed = new EmbedBuilder()
         .setColor("#FFD700")
@@ -61,7 +70,7 @@ export class EndTournament {
           },
           {
             name: "Duration",
-            value: `${calculateDuration(tournament.start_date)}`,
+            value: duration,
             inline: true,
           }
         )

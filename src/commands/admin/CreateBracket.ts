@@ -6,6 +6,7 @@ import {
   EmbedBuilder,
 } from "discord.js";
 import { AdminOnly } from "../../guards/AdminOnly.js";
+import { Prisma } from "@prisma/client";
 
 @Discord()
 export class GenerateBracket {
@@ -18,22 +19,26 @@ export class GenerateBracket {
     @SlashOption({
       name: "tournament_id",
       description: "The ID of the tournament to generate a bracket for",
-      type: ApplicationCommandOptionType.Integer,
+      type: ApplicationCommandOptionType.String,
       required: true,
     })
-    tournamentId: number,
+    tournamentId: string,
     interaction: CommandInteraction
   ) {
     try {
       await interaction.deferReply();
 
+      // Validate and parse the tournament ID
+      const parsedTournamentId =
+        this.validateAndParseTournamentId(tournamentId);
+
       const tournament = await prisma.tournament.findUnique({
-        where: { id: tournamentId },
+        where: { id: parsedTournamentId },
         include: { participants: true },
       });
 
       if (!tournament) {
-        throw new Error(`Tournament with ID ${tournamentId} not found.`);
+        throw new Error(`Tournament with ID ${parsedTournamentId} not found.`);
       }
 
       if (tournament.participants.length < 2) {
@@ -69,8 +74,32 @@ export class GenerateBracket {
       await interaction.editReply({ embeds: [embed] });
     } catch (error) {
       console.error("Error generating bracket:", error);
-      await interaction.editReply(`Error: ${error}`);
+      const errorMessage = this.getErrorMessage(error);
+      await interaction.editReply({ content: errorMessage });
     }
+  }
+
+  private validateAndParseTournamentId(tournamentId: string): number {
+    const parsedId = parseInt(tournamentId, 10);
+    if (isNaN(parsedId) || parsedId <= 0 || parsedId > 2147483647) {
+      throw new Error(
+        "Invalid tournament ID. Please provide a valid positive integer."
+      );
+    }
+    return parsedId;
+  }
+
+  private getErrorMessage(error: unknown): string {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2002") {
+        return "A database constraint was violated. Please try again with different input.";
+      } else if (error.code === "P2025") {
+        return "The requested record was not found in the database.";
+      }
+    }
+    return `An error occurred: ${
+      error instanceof Error ? error.message : String(error)
+    }`;
   }
 
   private shuffleArray(array: any[]) {
