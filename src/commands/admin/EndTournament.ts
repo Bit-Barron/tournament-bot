@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType } from "discord.js";
+import { ApplicationCommandOptionType, CommandInteraction } from "discord.js";
 import { Discord, Slash, SlashOption } from "discordx";
 import prisma from "../../lib/prisma.js";
 
@@ -15,7 +15,8 @@ export class EndTournament {
       type: ApplicationCommandOptionType.String,
       required: true,
     })
-    tournamentId: string
+    tournamentId: string,
+    interaction: CommandInteraction
   ) {
     try {
       const tournament = await prisma.tournament.findUnique({
@@ -37,9 +38,11 @@ export class EndTournament {
         },
       });
 
-      console.log(`Tournament ended: ${tournament.tournament_name}`);
+      await interaction.reply(
+        `Tournament cancelled: ${tournament.tournament_name}`
+      );
     } catch (error) {
-      console.error("Error creating tournament:", error);
+      await interaction.reply(`Error cancelling tournament: ${error}`);
     }
   }
 }
