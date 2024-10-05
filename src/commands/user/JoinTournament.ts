@@ -41,7 +41,7 @@ export class JoinTournament {
         }
 
         const existingParticipant = tournament.participants.find(
-          (p: { discord_id: string }) => p.discord_id === interaction.user.id
+          (p) => p.discord_id === interaction.user.id
         );
 
         if (existingParticipant) {
