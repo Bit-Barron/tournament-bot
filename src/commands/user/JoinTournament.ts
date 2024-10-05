@@ -30,48 +30,47 @@ export class JoinTournament {
     interaction: CommandInteraction
   ) {
     try {
-      const tournament = await prisma.tournament.findUnique({
-        where: { id: tournamentId },
-      });
+      const result = await prisma.$transaction(async (prisma) => {
+        const tournament = await prisma.tournament.findUnique({
+          where: { id: tournamentId },
+        });
 
-      if (!tournament) {
-        await interaction.reply(
-          `Error: Tournament with ID ${tournamentId} not found.`
-        );
-        return;
-      }
+        if (!tournament) {
+          throw new Error(`Tournament with ID ${tournamentId} not found.`);
+        }
 
-      let user = await prisma.user.upsert({
-        where: { brawlstars_id: brawlstarsId },
-        update: { username: userName },
-        create: {
-          brawlstars_id: brawlstarsId,
-          username: userName,
-        },
-      });
-
-      const updatedTournament = await prisma.tournament.update({
-        where: { id: tournamentId },
-        data: {
-          participants: {
-            connect: { id: user.id },
+        const user = await prisma.user.upsert({
+          where: { brawlstars_id: brawlstarsId },
+          update: { username: userName },
+          create: {
+            brawlstars_id: brawlstarsId,
+            username: userName,
           },
-        },
-        include: {
-          participants: true,
-        },
+        });
+
+        const updatedTournament = await prisma.tournament.update({
+          where: { id: tournamentId },
+          data: {
+            participants: {
+              connect: { id: user.id },
+            },
+          },
+          include: {
+            participants: true,
+          },
+        });
+
+        return updatedTournament;
       });
 
-      const participantCount = updatedTournament.participants.length;
+      const participantCount = result.participants.length;
 
       await interaction.reply(
         `Successfully joined the tournament. There are now ${participantCount} participant(s).`
       );
     } catch (error) {
       console.error("Error joining tournament:", error);
-      await interaction.reply(
-        `Error joining tournament. Please try again later.`
-      );
+      await interaction.reply(`Error joining tournament: ${error}`);
     }
   }
 }

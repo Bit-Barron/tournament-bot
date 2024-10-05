@@ -1,4 +1,4 @@
-import { Discord, Slash, SlashChoice, SlashOption } from "discordx";
+import { Discord, Slash, SlashOption } from "discordx";
 import { ApplicationCommandOptionType, CommandInteraction } from "discord.js";
 import prisma from "../../lib/prisma.js";
 
