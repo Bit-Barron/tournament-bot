@@ -6,3 +6,26 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id            Int      @id @default(autoincrement())
+  username      String?
+  brawlstars_id String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Tournament {
+  tournament_name String
+  start_date      DateTime
+  game_type       String
+  id              Int      @id @default(autoincrement())
+  status          TournamentStatus @default(PENDING)
+}
+
+enum TournamentStatus {
+  PENDING
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
