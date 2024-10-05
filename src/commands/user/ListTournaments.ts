@@ -16,10 +16,9 @@ export class ListTournaments {
         await interaction.reply("No tournaments found");
       }
       await interaction.reply(
-        `
-        Tournaments:
-        ${tournaments.map((t) => `${t.id}: ${t.tournament_name}`).join("\n")}
-        
+        `Tournaments:${tournaments
+          .map((t) => `${t.id}: ${t.tournament_name}`)
+          .join("\n")}
         `
       );
     } catch (error) {
