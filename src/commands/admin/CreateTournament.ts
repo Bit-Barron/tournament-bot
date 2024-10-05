@@ -1,4 +1,4 @@
-import { Discord, Slash, SlashOption } from "discordx";
+import { Discord, Slash, SlashChoice, SlashOption } from "discordx";
 import { ApplicationCommandOptionType, CommandInteraction } from "discord.js";
 import prisma from "../../lib/prisma.js";
 
@@ -25,13 +25,16 @@ export class CreateTournament {
     })
     startDate: string,
 
+    @SlashChoice({ name: "Solo", value: "SOLO" })
+    @SlashChoice({ name: "Duo", value: "DUO" })
+    @SlashChoice({ name: "Trios", value: "TRIOS" })
     @SlashOption({
       name: "game_type",
       description: "The type of game for the tournament",
       type: ApplicationCommandOptionType.String,
       required: true,
     })
-    gameType: string,
+    gameType: "SOLO" | "DUO" | "TRIOS",
 
     interaction: CommandInteraction
   ) {
