@@ -35,6 +35,8 @@ export class JoinTournament {
     interaction: CommandInteraction
   ) {
     try {
+      await interaction.deferReply();
+
       const result = await prisma.$transaction(async (prisma) => {
         const tournament = await prisma.tournament.findUnique({
           where: { id: tournamentId },
@@ -57,18 +59,27 @@ export class JoinTournament {
           throw new Error("You have already joined this tournament.");
         }
 
-        const user = await prisma.user.upsert({
-          where: { brawlstars_id: brawlstarsId },
-          update: {
-            username: userName,
-            discord_id: interaction.user.id,
-          },
-          create: {
-            brawlstars_id: brawlstarsId,
-            username: userName,
-            discord_id: interaction.user.id,
-          },
+        let user = await prisma.user.findUnique({
+          where: { discord_id: interaction.user.id },
         });
+
+        if (user) {
+          user = await prisma.user.update({
+            where: { discord_id: interaction.user.id },
+            data: {
+              brawlstars_id: brawlstarsId,
+              username: userName,
+            },
+          });
+        } else {
+          user = await prisma.user.create({
+            data: {
+              discord_id: interaction.user.id,
+              brawlstars_id: brawlstarsId,
+              username: userName,
+            },
+          });
+        }
 
         const updatedTournament = await prisma.tournament.update({
           where: { id: tournamentId },
@@ -87,12 +98,16 @@ export class JoinTournament {
 
       const participantCount = result.participants.length;
 
-      await interaction.reply(
+      await interaction.editReply(
         `Successfully joined the tournament. There are now ${participantCount} participant(s).`
       );
     } catch (error) {
       console.error("Error joining tournament:", error);
-      await interaction.reply(`Error joining tournament: ${error}`);
+
+      await interaction.followUp({
+        content: `Error joining tournament: ${error}`,
+        ephemeral: true,
+      });
     }
   }
 }

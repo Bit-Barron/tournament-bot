@@ -36,8 +36,7 @@ export class ListTournaments {
             inline: true,
           }))
         )
-        .setTimestamp()
-        .setFooter({ text: "Use /tournament-info [id] for more details" });
+        .setTimestamp();
 
       await interaction.editReply({ embeds: [embed] });
     } catch (error) {
