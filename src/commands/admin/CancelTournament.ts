@@ -45,7 +45,7 @@ export class CancelTournament {
         data: { status: "CANCELED" },
       });
 
-      const embed = new EmbedBuilder()
+      const embed  = new EmbedBuilder()
         .setColor("#FF0000")
         .setTitle("❌ Tournament Cancelled ❌")
         .setDescription(`**${tournament.tournament_name}** has been cancelled.`)
