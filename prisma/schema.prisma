@@ -31,6 +31,14 @@ model Tournament {
   hosted_by         String             
 }
 
+model Admin {
+  id String @id @default(cuid())
+
+  username String @unique
+  password String
+}
+
+
 enum GameType {
   SOLO
   DUO

@@ -48,7 +48,7 @@ export class CreateTournament {
 
     @SlashOption({
       name: "start_date",
-      description: "The start date of the tournament (YYYY-MM-DD)",
+      description: "The start date of the tournament (YYYY-MM-DD or 'today')",
       type: ApplicationCommandOptionType.String,
       required: true,
     })
@@ -59,6 +59,28 @@ export class CreateTournament {
     await interaction.deferReply();
 
     try {
+      // Validate and parse the start date
+      let parsedDate: Date;
+      if (startDate.toLowerCase() === "today") {
+        parsedDate = new Date();
+      } else {
+        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!dateRegex.test(startDate)) {
+          throw new Error(
+            "Invalid date format. Please use YYYY-MM-DD or 'today'."
+          );
+        }
+        parsedDate = new Date(startDate);
+        if (isNaN(parsedDate.getTime())) {
+          throw new Error("Invalid date. Please enter a valid date.");
+        }
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (parsedDate < today) {
+          throw new Error("Start date must be today or a future date.");
+        }
+      }
+
       const hostUsername = interaction.user.username;
 
       const tournament = await prisma.tournament.create({
@@ -66,7 +88,7 @@ export class CreateTournament {
           tournament_name: tournamentName,
           game_type: gameType,
           max_participants: maxParticipants,
-          start_date: new Date(startDate),
+          start_date: parsedDate,
           status: "PENDING",
           hosted_by: hostUsername,
         },
@@ -79,7 +101,11 @@ export class CreateTournament {
         .addFields(
           { name: "Tournament ID", value: `${tournament.id}`, inline: true },
           { name: "Game Type", value: gameType, inline: true },
-          { name: "Start Date", value: startDate, inline: true },
+          {
+            name: "Start Date",
+            value: parsedDate.toISOString().split("T")[0],
+            inline: true,
+          },
           { name: "Status", value: "PENDING", inline: true },
           { name: "Hosted By", value: hostUsername, inline: true },
           {
