@@ -1,4 +1,4 @@
-import { Discord, Slash, SlashChoice, SlashOption } from "discordx";
+import { Discord, Guard, Slash, SlashChoice, SlashOption } from "discordx";
 import {
   ApplicationCommandOptionType,
   CommandInteraction,
@@ -6,6 +6,7 @@ import {
 } from "discord.js";
 import prisma from "../../lib/prisma.js";
 import { GameType } from "@prisma/client";
+import { AdminOnly } from "../../guards/AdminOnly.js";
 
 @Discord()
 export class CreateTournament {
@@ -13,6 +14,7 @@ export class CreateTournament {
     name: "tournament-create",
     description: "Create a new tournament",
   })
+  @Guard(AdminOnly())
   async createTournament(
     @SlashOption({
       name: "tournament_name",

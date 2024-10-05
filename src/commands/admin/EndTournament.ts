@@ -1,10 +1,11 @@
-import { Discord, Slash, SlashOption } from "discordx";
+import { Discord, Guard, Slash, SlashOption } from "discordx";
 import {
   ApplicationCommandOptionType,
   CommandInteraction,
   EmbedBuilder,
 } from "discord.js";
 import prisma from "../../lib/prisma.js";
+import { AdminOnly } from "../../guards/AdminOnly.js";
 
 @Discord()
 export class EndTournament {
@@ -12,6 +13,7 @@ export class EndTournament {
     name: "tournament-end",
     description: "End a tournament",
   })
+  @Guard(AdminOnly())
   async endTournament(
     @SlashOption({
       name: "tournament_id",
