@@ -59,17 +59,14 @@ export class CreateTournament {
     await interaction.deferReply();
 
     try {
-      // Validate tournament name
       if (tournamentName.split(/\s+/).length > 10) {
         throw new Error("Tournament name cannot exceed 10 words.");
       }
 
-      // Validate max participants
       if (maxParticipants < 1 || maxParticipants > 50) {
         throw new Error("Max participants must be between 1 and 50.");
       }
 
-      // Validate and parse the start date
       let parsedDate: Date;
       if (startDate.toLowerCase() === "today") {
         parsedDate = new Date();
