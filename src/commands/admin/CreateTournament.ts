@@ -59,24 +59,29 @@ export class CreateTournament {
     await interaction.deferReply();
 
     try {
-      // Validate tournament name
       if (tournamentName.length > 50) {
         throw new Error("Tournament name cannot exceed 50 characters.");
       }
 
-      // Validate max participants
-      if (maxParticipants < 1 || maxParticipants > 50 || !Number.isInteger(maxParticipants)) {
-        throw new Error("Max participants must be an integer between 1 and 50.");
+      if (
+        maxParticipants < 1 ||
+        maxParticipants > 50 ||
+        !Number.isInteger(maxParticipants)
+      ) {
+        throw new Error(
+          "Max participants must be an integer between 1 and 50."
+        );
       }
 
-      // Validate start date
       let parsedDate: Date;
       if (startDate.toLowerCase() === "today") {
         parsedDate = new Date();
       } else {
         const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
         if (!dateRegex.test(startDate)) {
-          throw new Error("Invalid date format. Please use YYYY-MM-DD or 'today'.");
+          throw new Error(
+            "Invalid date format. Please use YYYY-MM-DD or 'today'."
+          );
         }
         parsedDate = new Date(startDate);
         if (isNaN(parsedDate.getTime())) {

@@ -20,7 +20,7 @@ export class LeaveTournament {
     interaction: CommandInteraction
   ) {
     try {
-      const result = await prisma.$transaction(async (prisma: any) => {
+      const result = await prisma.$transaction(async (prisma) => {
         const user = await prisma.user.findUnique({
           where: { discord_id: interaction.user.id },
         });
