@@ -17,23 +17,13 @@ export class CreateTournament {
     })
     tournamentName: string,
 
-    @SlashChoice({ name: "Today", value: "TODAY" })
-    @SlashChoice({ name: "Custom Date", value: "CUSTOM" })
     @SlashOption({
-      name: "date_option",
-      description: "Choose today's date or enter a custom date",
+      name: "start_date",
+      description: "The start date of the tournament (YYYY-MM-DD)",
       type: ApplicationCommandOptionType.String,
       required: true,
     })
-    dateOption: "TODAY" | "CUSTOM",
-
-    @SlashOption({
-      name: "custom_date",
-      description: "The custom start date of the tournament (YYYY-MM-DD)",
-      type: ApplicationCommandOptionType.String,
-      required: false,
-    })
-    customDate: string | undefined,
+    startDate: string,
 
     @SlashChoice({ name: "Solo", value: "SOLO" })
     @SlashChoice({ name: "Duo", value: "DUO" })
@@ -49,33 +39,19 @@ export class CreateTournament {
     interaction: CommandInteraction
   ) {
     try {
-      let startDate: Date;
-
-      if (dateOption === "TODAY") {
-        startDate = new Date();
-      } else if (dateOption === "CUSTOM") {
-        if (!customDate) {
-          throw new Error(
-            "Custom date is required when 'Custom Date' option is selected."
-          );
-        }
-        startDate = new Date(customDate);
-        if (isNaN(startDate.getTime())) {
-          throw new Error("Invalid date format. Please use YYYY-MM-DD.");
-        }
-      } else {
-        throw new Error("Invalid date option selected.");
+      const parsedDate = new Date(startDate);
+      if (isNaN(parsedDate.getTime())) {
+        throw new Error("Invalid date format. Please use YYYY-MM-DD.");
       }
 
       const tournament = await prisma.tournament.create({
         data: {
           tournament_name: tournamentName,
           game_type: gameType,
-          start_date: startDate,
+          start_date: parsedDate,
           status: "PENDING",
         },
       });
-
       await interaction.reply(
         `Tournament created successfully!\n` +
           `Name: ${tournament.tournament_name}\n` +

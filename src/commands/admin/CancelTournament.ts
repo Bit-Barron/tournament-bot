@@ -38,6 +38,8 @@ export class CancelTournament {
           status: "COMPLETED",
         },
       });
+
+      
     } catch (error) {
       await interaction.reply(`Error cancelling tournament: ${error}`);
     }
