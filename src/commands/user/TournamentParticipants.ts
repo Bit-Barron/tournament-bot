@@ -36,16 +36,22 @@ export class TournamentParticipants {
           participants: true,
         },
       });
-
+      
       if (!tournament) {
-        throw new Error(`Tournament with ID ${tournamentId} not found.`);
+        await interaction.reply({
+          content: `Tournament with ID ${tournamentId} not found.`,
+          ephemeral: true,
+        });
+        return;
       }
 
-      const participants = tournament.participants.map((participant: { username: any; brawlstars_id: any; }, index: number) => {
-        return `${index + 1}. ${participant.username} (${
-          participant.brawlstars_id
-        })`;
-      });
+      const participants = tournament.participants.map(
+        (participant: { username: any; brawlstars_id: any }, index: number) => {
+          return `${index + 1}. ${participant.username} (${
+            participant.brawlstars_id
+          })`;
+        }
+      );
 
       const totalPages = Math.ceil(participants.length / PARTICIPANTS_PER_PAGE);
 
@@ -54,10 +60,15 @@ export class TournamentParticipants {
         const end = start + PARTICIPANTS_PER_PAGE;
         const pageParticipants = participants.slice(start, end);
 
+        let description = pageParticipants.join("\n");
+        if (description.length === 0) {
+          description = "No participants found for this tournament.";
+        }
+
         return new EmbedBuilder()
           .setColor(0x0099ff)
           .setTitle(`🏆 Participants: ${tournament.tournament_name}`)
-          .setDescription(pageParticipants.join("\n"))
+          .setDescription(description)
           .addFields(
             { name: "Tournament ID", value: `${tournament.id}`, inline: true },
             {
