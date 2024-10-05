@@ -80,18 +80,11 @@ export class EndTournament {
             inline: true,
           }
         )
-        .addFields(
-          {
-            name: "Next Steps",
-            value:
-              "Congratulations to all participants! Final results will be announced soon.",
-          },
-          {
-            name: "Feedback",
-            value:
-              "Please use `/tournament-feedback` to share your thoughts on this tournament.",
-          }
-        )
+        .addFields({
+          name: "Next Steps",
+          value:
+            "Congratulations to all participants! Final results will be announced soon.",
+        })
         .setFooter({ text: "Thank you for participating!" })
         .setTimestamp();
 
