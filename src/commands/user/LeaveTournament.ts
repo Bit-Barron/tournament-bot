@@ -15,6 +15,7 @@ export class LeaveTournament {
       name: "tournament_id",
       description: "The ID of the tournament to leave",
       type: ApplicationCommandOptionType.Integer,
+      required: true,
     })
     tournamentId: number,
     interaction: CommandInteraction

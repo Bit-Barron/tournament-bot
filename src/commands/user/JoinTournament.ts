@@ -20,22 +20,31 @@ export class JoinTournament {
     tournamentId: number,
     @SlashOption({
       name: "brawlstars_id",
-      description: "Your Brawl Stars player ID",
+      description: "Your Brawl Stars player ID (max 40 characters)",
       type: ApplicationCommandOptionType.String,
       required: true,
+      maxLength: 40,
     })
     brawlstarsId: string,
     @SlashOption({
       name: "username",
-      description: "Your username",
+      description: "Your username (max 40 characters)",
       type: ApplicationCommandOptionType.String,
       required: true,
+      maxLength: 40,
     })
     userName: string,
     interaction: CommandInteraction
   ) {
     try {
       await interaction.deferReply();
+
+      // Input validation
+      if (brawlstarsId.length > 40 || userName.length > 40) {
+        throw new Error(
+          "Brawl Stars ID and username must be 40 characters or less."
+        );
+      }
 
       const result = await prisma.$transaction(async (prisma) => {
         const existingParticipation = await prisma.tournament.findFirst({
