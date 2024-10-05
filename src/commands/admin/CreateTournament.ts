@@ -52,7 +52,7 @@ export class CreateTournament {
           status: "PENDING",
         },
       });
-
+      console.log(tournament);
       await interaction.reply(
         `Tournament created successfully!\n` +
           `Name: ${tournament.tournament_name}\n` +
