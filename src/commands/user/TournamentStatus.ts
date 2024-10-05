@@ -1,4 +1,4 @@
-import { Discord, Slash, SlashOption } from "discordx";
+import { Discord, Guard, Slash, SlashOption } from "discordx";
 import {
   ApplicationCommandOptionType,
   CommandInteraction,
@@ -6,6 +6,7 @@ import {
 } from "discord.js";
 import prisma from "../../lib/prisma.js";
 import { getStatusColor } from "../../lib/helpers.js";
+import { ChannelOnly } from "../../guards/ChanelOnly.js";
 
 @Discord()
 export class TournamentStatus {
@@ -13,6 +14,7 @@ export class TournamentStatus {
     name: "tournament-status",
     description: "Get the status of a tournament",
   })
+  @Guard(ChannelOnly("TOURNAMENT_INFO_CHANNEL"))
   async getTournamentStatus(
     @SlashOption({
       name: "tournament_id",

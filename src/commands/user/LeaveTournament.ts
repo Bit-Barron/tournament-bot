@@ -1,6 +1,7 @@
-import { Discord, Slash, SlashOption } from "discordx";
+import { Discord, Guard, Slash, SlashOption } from "discordx";
 import prisma from "../../lib/prisma.js";
 import { ApplicationCommandOptionType, CommandInteraction } from "discord.js";
+import { ChannelOnly } from "../../guards/ChanelOnly.js";
 
 @Discord()
 export class LeaveTournament {
@@ -8,6 +9,7 @@ export class LeaveTournament {
     name: "leave-tournament",
     description: "Leave a tournament",
   })
+  @Guard(ChannelOnly("TOURNAMENT_JOIN_LEAVE_CHANNEL"))
   async leaveTournament(
     @SlashOption({
       name: "tournament_id",
