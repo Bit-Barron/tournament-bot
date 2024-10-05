@@ -52,6 +52,8 @@ export class CreateTournament {
     await interaction.deferReply();
 
     try {
+      const hostUsername = interaction.user.username;
+
       const tournament = await prisma.tournament.create({
         data: {
           tournament_name: tournamentName,
@@ -59,6 +61,7 @@ export class CreateTournament {
           max_participants: maxParticipants,
           start_date: new Date(startDate),
           status: "PENDING",
+          hosted_by: hostUsername,
         },
       });
 
@@ -71,6 +74,12 @@ export class CreateTournament {
           { name: "Game Type", value: gameType, inline: true },
           { name: "Start Date", value: startDate, inline: true },
           { name: "Status", value: "PENDING", inline: true },
+          { name: "Hosted By", value: hostUsername, inline: true },
+          {
+            name: "Max Participants",
+            value: `${maxParticipants}`,
+            inline: true,
+          },
           {
             name: "How to Join",
             value: `Use \`/join tournament_id:${tournament.id}\` to participate!`,
