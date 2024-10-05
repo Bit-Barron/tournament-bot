@@ -39,9 +39,7 @@ export class CancelTournament {
         },
       });
 
-      await interaction.reply(
-        `Tournament cancelled: ${tournament.tournament_name}`
-      );
+      
     } catch (error) {
       await interaction.reply(`Error cancelling tournament: ${error}`);
     }
