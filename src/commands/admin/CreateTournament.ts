@@ -1,8 +1,6 @@
 import { Discord, Slash, SlashOption } from "discordx";
 import { ApplicationCommandOptionType, CommandInteraction } from "discord.js";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "../../lib/prisma.js";
 
 @Discord()
 export class CreateTournament {
@@ -48,6 +46,7 @@ export class CreateTournament {
           tournament_name: tournamentName,
           game_type: gameType,
           start_date: parsedDate,
+          status: "PENDING",
         },
       });
 
