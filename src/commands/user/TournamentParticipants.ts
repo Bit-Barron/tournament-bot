@@ -36,7 +36,7 @@ export class TournamentParticipants {
           participants: true,
         },
       });
-      
+
       if (!tournament) {
         await interaction.reply({
           content: `Tournament with ID ${tournamentId} not found.`,
@@ -45,15 +45,16 @@ export class TournamentParticipants {
         return;
       }
 
-      const participants = tournament.participants.map(
-        (participant: { username: any; brawlstars_id: any }, index: number) => {
-          return `${index + 1}. ${participant.username} (${
-            participant.brawlstars_id
-          })`;
-        }
-      );
+      const participants = tournament.participants.map((participant, index) => {
+        return `${index + 1}. ${participant.username} (${
+          participant.brawlstars_id
+        })`;
+      });
 
-      const totalPages = Math.ceil(participants.length / PARTICIPANTS_PER_PAGE);
+      const totalPages = Math.max(
+        1,
+        Math.ceil(participants.length / PARTICIPANTS_PER_PAGE)
+      );
 
       const generateEmbed = (page: number) => {
         const start = (page - 1) * PARTICIPANTS_PER_PAGE;
@@ -88,12 +89,14 @@ export class TournamentParticipants {
             .setCustomId("previous")
             .setLabel("Previous")
             .setStyle(ButtonStyle.Primary)
-            .setDisabled(currentPage === 1),
+            .setDisabled(currentPage === 1 || participants.length === 0),
           new ButtonBuilder()
             .setCustomId("next")
             .setLabel("Next")
             .setStyle(ButtonStyle.Primary)
-            .setDisabled(currentPage === totalPages)
+            .setDisabled(
+              currentPage === totalPages || participants.length === 0
+            )
         );
         return row;
       };
@@ -113,9 +116,9 @@ export class TournamentParticipants {
       });
 
       collector.on("collect", async (i) => {
-        if (i.customId === "previous") {
+        if (i.customId === "previous" && currentPage > 1) {
           currentPage--;
-        } else if (i.customId === "next") {
+        } else if (i.customId === "next" && currentPage < totalPages) {
           currentPage++;
         }
 
