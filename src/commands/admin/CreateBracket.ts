@@ -28,7 +28,6 @@ export class GenerateBracket {
     try {
       await interaction.deferReply();
 
-      // Validate and parse the tournament ID
       const parsedTournamentId =
         this.validateAndParseTournamentId(tournamentId);
 
