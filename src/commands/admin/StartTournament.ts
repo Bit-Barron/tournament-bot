@@ -5,7 +5,7 @@ import prisma from "../../lib/prisma.js";
 @Discord()
 export class StartTournament {
   @Slash({
-    name: "start",
+    name: "tournament-start",
     description: "Start a tournament",
   })
   async startTournament(

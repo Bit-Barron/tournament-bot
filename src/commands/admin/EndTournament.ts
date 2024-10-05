@@ -5,7 +5,7 @@ import prisma from "../../lib/prisma.js";
 @Discord()
 export class EndTournament {
   @Slash({
-    name: "end",
+    name: "tournament-end",
     description: "End a tournament",
   })
   async endTournament(

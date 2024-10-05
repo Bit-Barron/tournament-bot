@@ -5,7 +5,7 @@ import { CommandInteraction } from "discord.js";
 @Discord()
 export class ListTournaments {
   @Slash({
-    name: "list",
+    name: "tournament-list",
     description: "List all tournaments",
   })
   async listTournaments(interaction: CommandInteraction) {

@@ -5,7 +5,7 @@ import { ApplicationCommandOptionType, CommandInteraction } from "discord.js";
 @Discord()
 export class JoinTournament {
   @Slash({
-    name: "join",
+    name: "tournament-join",
     description: "Join a tournament",
   })
   async joinTournament(
