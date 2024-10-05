@@ -12,9 +12,9 @@ export class JoinTournament {
     @SlashOption({
       name: "tournament_id",
       description: "The ID of the tournament to join",
-      type: ApplicationCommandOptionType.String,
+      type: ApplicationCommandOptionType.Integer,
     })
-    tournamentId: string,
+    tournamentId: number,
     @SlashOption({
       name: "brawlstars_id",
       description: "Your Brawl Stars player ID",
@@ -30,21 +30,38 @@ export class JoinTournament {
     interaction: CommandInteraction
   ) {
     try {
-      const tournament = await prisma.user.create({
-        data: {
-          brawlstars_id: brawlstarsId,
-          username: userName,
-          tournaments: {
-            connect: {
-              id: parseInt(tournamentId),
-            },
+      let user = await prisma.user.findUnique({
+        where: { brawlstars_id: brawlstarsId },
+      });
+
+      if (!user) {
+        user = await prisma.user.create({
+          data: {
+            brawlstars_id: brawlstarsId,
+            username: userName,
           },
+        });
+      }
+
+      const updatedTournament = await prisma.tournament.update({
+        where: { id: tournamentId },
+        data: {
+          participants: {
+            connect: { id: user.id },
+          },
+        },
+        include: {
+          participants: true,
         },
       });
 
-      await interaction.reply(`Succefull: ${tournament.username}`);
+      const participantCount = updatedTournament.participants.length;
+
+      await interaction.reply(
+        `Successfully joined the tournament. There are now ${participantCount} participant(s).`
+      );
     } catch (error) {
-      await interaction.reply(`Error starting tournament: ${error}`);
+      await interaction.reply(`Error joining tournament: ${error}`);
     }
   }
 }
