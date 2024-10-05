@@ -1,6 +1,6 @@
 import { Discord, Slash, SlashOption } from "discordx";
 import prisma from "../../lib/prisma.js";
-import { ApplicationCommandOptionType } from "discord.js";
+import { ApplicationCommandOptionType, CommandInteraction } from "discord.js";
 
 @Discord()
 export class JoinTournament {
@@ -26,7 +26,8 @@ export class JoinTournament {
       description: "Your username",
       type: ApplicationCommandOptionType.String,
     })
-    userName: string
+    userName: string,
+    interaction: CommandInteraction
   ) {
     try {
       const tournament = await prisma.user.create({
@@ -40,8 +41,10 @@ export class JoinTournament {
           },
         },
       });
-    } catch (err) {
-      console.error(err);
+
+      await interaction.reply(`Succefull: ${tournament.username}`);
+    } catch (error) {
+      await interaction.reply(`Error starting tournament: ${error}`);
     }
   }
 }
