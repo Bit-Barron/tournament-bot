@@ -23,6 +23,7 @@ export class LeaveTournament {
           brawlstars_id: brawlstarsId,
         },
       });
+
       await interaction.reply(`Leaved`);
     } catch (err) {
       console.error(err);
