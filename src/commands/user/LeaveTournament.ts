@@ -10,23 +10,60 @@ export class LeaveTournament {
   })
   async leaveTournament(
     @SlashOption({
-      name: "brawlstars_id",
-      description: "Your Brawl Stars player ID",
-      type: ApplicationCommandOptionType.String,
+      name: "tournament_id",
+      description: "The ID of the tournament to leave",
+      type: ApplicationCommandOptionType.Integer,
     })
-    brawlstarsId: string,
+    tournamentId: number,
     interaction: CommandInteraction
   ) {
     try {
-      const tournament = await prisma.user.delete({
-        where: {
-          brawlstars_id: brawlstarsId,
-        },
+      const result = await prisma.$transaction(async (prisma) => {
+        const user = await prisma.user.findUnique({
+          where: { discord_id: interaction.user.id },
+        });
+
+        if (!user) {
+          throw new Error("You are not registered for any tournaments.");
+        }
+
+        const tournament = await prisma.tournament.findUnique({
+          where: { id: tournamentId },
+          include: { participants: true },
+        });
+
+        if (!tournament) {
+          throw new Error(`Tournament with ID ${tournamentId} not found.`);
+        }
+
+        const isParticipant = tournament.participants.some(
+          (p) => p.id === user.id
+        );
+        if (!isParticipant) {
+          throw new Error("You are not a participant in this tournament.");
+        }
+
+        const updatedTournament = await prisma.tournament.update({
+          where: { id: tournamentId },
+          data: {
+            participants: {
+              disconnect: { id: user.id },
+            },
+          },
+          include: { participants: true },
+        });
+
+        return updatedTournament;
       });
 
-      await interaction.reply(`Leaved`);
-    } catch (err) {
-      console.error(err);
+      const participantCount = result.participants.length;
+
+      await interaction.reply(
+        `You have successfully left the tournament. There are now ${participantCount} participant(s) remaining.`
+      );
+    } catch (error) {
+      console.error("Error leaving tournament:", error);
+      await interaction.reply(`Error: ${error}`);
     }
   }
 }
