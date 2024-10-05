@@ -62,18 +62,11 @@ export class StartTournament {
           },
           { name: "Status", value: "ONGOING", inline: true }
         )
-        .addFields(
-          {
-            name: "Next Steps",
-            value:
-              "Participants should check their matchups and prepare for their first games!",
-          },
-          {
-            name: "Reporting Results",
-            value:
-              "Use `/report-match tournament_id:[ID] winner:[WINNER_ID]` to report match results.",
-          }
-        )
+        .addFields({
+          name: "Next Steps",
+          value:
+            "Participants should check their matchups and prepare for their first games!",
+        })
         .setFooter({ text: "May the best player/team win!" })
         .setTimestamp();
 
