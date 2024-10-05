@@ -38,5 +38,6 @@ enum GameType {
 enum TournamentStatus {
   PENDING
   ONGOING
+  CANCELED
   COMPLETED
 }

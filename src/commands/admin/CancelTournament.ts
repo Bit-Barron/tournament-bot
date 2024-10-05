@@ -38,7 +38,7 @@ export class CancelTournament {
         );
       }
 
-      const updatedTournament = await prisma.tournament.update({
+      await prisma.tournament.update({
         where: { id: tournamentId },
         data: { status: "COMPLETED" },
       });
