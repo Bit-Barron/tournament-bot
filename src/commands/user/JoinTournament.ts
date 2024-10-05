@@ -13,18 +13,21 @@ export class JoinTournament {
       name: "tournament_id",
       description: "The ID of the tournament to join",
       type: ApplicationCommandOptionType.Integer,
+      required: true,
     })
     tournamentId: number,
     @SlashOption({
       name: "brawlstars_id",
       description: "Your Brawl Stars player ID",
       type: ApplicationCommandOptionType.String,
+      required: true,
     })
     brawlstarsId: string,
     @SlashOption({
       name: "username",
       description: "Your username",
       type: ApplicationCommandOptionType.String,
+      required: true,
     })
     userName: string,
     interaction: CommandInteraction

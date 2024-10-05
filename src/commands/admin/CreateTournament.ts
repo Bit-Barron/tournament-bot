@@ -5,11 +5,10 @@ import {
   EmbedBuilder,
 } from "discord.js";
 import prisma from "../../lib/prisma.js";
-
-type GameType = "SOLO" | "DUO" | "TRIOS";
+import { GameType } from "@prisma/client";
 
 @Discord()
-export class TournamentCreate {
+export class CreateTournament {
   @Slash({
     name: "tournament-create",
     description: "Create a new tournament",
@@ -22,6 +21,24 @@ export class TournamentCreate {
       required: true,
     })
     tournamentName: string,
+
+    @SlashChoice(...Object.values(GameType))
+    @SlashOption({
+      name: "game_type",
+      description: "The type of game for the tournament",
+      type: ApplicationCommandOptionType.String,
+      required: true,
+    })
+    gameType: GameType,
+
+    @SlashOption({
+      name: "max_participants",
+      description: "The maximum number of participants allowed",
+      type: ApplicationCommandOptionType.Integer,
+      required: true,
+    })
+    maxParticipants: number,
+
     @SlashOption({
       name: "start_date",
       description: "The start date of the tournament (YYYY-MM-DD)",
@@ -29,75 +46,55 @@ export class TournamentCreate {
       required: true,
     })
     startDate: string,
-    @SlashChoice({ name: "Solo", value: "SOLO" })
-    @SlashChoice({ name: "Duo", value: "DUO" })
-    @SlashChoice({ name: "Trios", value: "TRIOS" })
-    @SlashOption({
-      name: "game_type",
-      description: "The type of game for the tournament",
-      type: ApplicationCommandOptionType.String,
-      required: true,
-    })
-    gameType: "SOLO" | "DUO" | "TRIOS",
-    interaction: CommandInteraction,
-    @SlashOption({
-      name: "max_participants",
-      description: "The maximum number of participants",
-      type: ApplicationCommandOptionType.Integer,
-      required: true,
-    })
-    maxParticipants: number
+
+    interaction: CommandInteraction
   ) {
     try {
-      const normalizedGameType = gameType.toUpperCase() as GameType;
-      if (!["SOLO", "DUO", "TRIOS"].includes(normalizedGameType)) {
-        throw new Error("Invalid game type. Must be SOLO, DUO, or TRIOS.");
-      }
-
-      const parsedDate = new Date(startDate);
-      if (isNaN(parsedDate.getTime())) {
-        throw new Error("Invalid date format. Please use YYYY-MM-DD.");
-      }
-
       const tournament = await prisma.tournament.create({
         data: {
           tournament_name: tournamentName,
-          start_date: parsedDate,
-          game_type: normalizedGameType,
+          game_type: gameType,
           MAX_PARTICIPANTS: maxParticipants,
+          start_date: new Date(startDate),
+          status: "PENDING",
         },
       });
 
       const embed = new EmbedBuilder()
-        .setColor("#00ff00")
-        .setTitle("🏆 New Tournament Created! 🏆")
-        .setDescription(`**${tournamentName}** has been successfully created.`)
+        .setColor(0x00ff00)
+        .setTitle("Tournament Created Successfully")
+        .setDescription(`A new tournament has been created!`)
         .addFields(
-          { name: "Tournament ID", value: `${tournament.id}`, inline: true },
-          { name: "Game Type", value: normalizedGameType, inline: true },
-          { name: "Start Date", value: startDate, inline: true },
-          { name: "Status", value: "PENDING", inline: true }
-        )
-        .addFields(
+          { name: "Tournament Name", value: tournamentName, inline: true },
+          { name: "Game Type", value: gameType, inline: true },
           {
-            name: "How to Join",
-            value: `Use \`/join tournament_id:${tournament.id}\` to participate!`,
+            name: "Max Participants",
+            value: `${maxParticipants}`,
+            inline: true,
           },
-          {
-            name: "Starting the Tournament",
-            value: `Organizers can use \`/tournament-start tournament_id:${tournament.id}\` when ready to begin.`,
-          }
+          { name: "Start Date", value: startDate, inline: true },
+          { name: "Tournament ID", value: `${tournament.id}`, inline: true },
+          { name: "Status", value: tournament.status, inline: true }
         )
-        .setFooter({ text: "Good luck to all participants!" })
+        .setFooter({ text: `Created by ${interaction.user.username}` })
         .setTimestamp();
 
       await interaction.reply({ embeds: [embed] });
     } catch (error) {
       console.error("Error creating tournament:", error);
-      await interaction.reply({
-        content: `Error creating tournament: ${error}`,
-        ephemeral: true,
-      });
+
+      const errorEmbed = new EmbedBuilder()
+        .setColor(0xff0000)
+        .setTitle("Error Creating Tournament")
+        .setDescription(
+          `An error occurred while creating the tournament: ${error}`
+        )
+        .setFooter({
+          text: "Please try again or contact an administrator if the problem persists.",
+        })
+        .setTimestamp();
+
+      await interaction.reply({ embeds: [errorEmbed], ephemeral: true });
     }
   }
 }
