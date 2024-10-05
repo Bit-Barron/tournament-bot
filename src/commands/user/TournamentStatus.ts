@@ -15,10 +15,15 @@ export class TournamentStatus {
       type: ApplicationCommandOptionType.String,
       required: true,
     })
+    tournamentId: string,
     interaction: CommandInteraction
   ) {
     try {
-      const tournament = await prisma.tournament.findFirst({});
+      const tournament = await prisma.tournament.findFirst({
+        where: {
+          id: parseInt(tournamentId),
+        },
+      });
 
       if (tournament) {
         await interaction.reply(`Tournament Status: ${tournament.status}`);
