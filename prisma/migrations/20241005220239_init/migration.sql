@@ -30,6 +30,15 @@ CREATE TABLE "Tournament" (
 );
 
 -- CreateTable
+CREATE TABLE "Admin" (
+    "id" TEXT NOT NULL,
+    "username" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+
+    CONSTRAINT "Admin_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "_UserTournaments" (
     "A" INTEGER NOT NULL,
     "B" INTEGER NOT NULL
@@ -40,6 +49,9 @@ CREATE UNIQUE INDEX "User_brawlstars_id_key" ON "User"("brawlstars_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_discord_id_key" ON "User"("discord_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Admin_username_key" ON "Admin"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_UserTournaments_AB_unique" ON "_UserTournaments"("A", "B");
