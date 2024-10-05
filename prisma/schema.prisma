@@ -28,7 +28,7 @@ model Tournament {
   status            TournamentStatus  @default(PENDING)
   participants      User[]            @relation("UserTournaments")
   max_participants  Int
-  hostet_by         String             
+  hosted_by         String             
 }
 
 enum GameType {

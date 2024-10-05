@@ -24,7 +24,7 @@ CREATE TABLE "Tournament" (
     "game_type" "GameType" NOT NULL,
     "status" "TournamentStatus" NOT NULL DEFAULT 'PENDING',
     "max_participants" INTEGER NOT NULL,
-    "hostet_by" TEXT NOT NULL,
+    "hosted_by" TEXT NOT NULL,
 
     CONSTRAINT "Tournament_pkey" PRIMARY KEY ("id")
 );
