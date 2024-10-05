@@ -36,7 +36,7 @@ export class StartTournament {
         throw new Error("This tournament has already started");
       }
 
-      const updatedTournament = await prisma.tournament.update({
+      await prisma.tournament.update({
         where: { id: tournamentId },
         data: { status: "ONGOING" },
       });

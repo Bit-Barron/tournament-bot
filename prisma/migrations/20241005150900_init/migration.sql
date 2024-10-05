@@ -23,6 +23,7 @@ CREATE TABLE "Tournament" (
     "start_date" TIMESTAMP(3) NOT NULL,
     "game_type" "GameType" NOT NULL,
     "status" "TournamentStatus" NOT NULL DEFAULT 'PENDING',
+    "MAX_PARTICIPANTS" INTEGER NOT NULL,
 
     CONSTRAINT "Tournament_pkey" PRIMARY KEY ("id")
 );
