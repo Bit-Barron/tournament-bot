@@ -46,6 +46,12 @@ export class EndTournament {
         throw new Error("Cannot end a tournament that hasn't started yet");
       }
 
+      if (tournament.status === "CANCELED") {
+        await interaction.reply({
+          content: `Tournament ${tournament.tournament_name} (ID: ${tournament.id}) has already been Cancelled.`,
+        });
+      }
+
       await prisma.tournament.update({
         where: { id: tournamentId },
         data: { status: "COMPLETED" },

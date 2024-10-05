@@ -40,12 +40,18 @@ export class CancelTournament {
         );
       }
 
+      if (tournament.status === "CANCELED") {
+        await interaction.reply({
+          content: `Tournament ${tournament.tournament_name} (ID: ${tournament.id}) has already been cancelled.`,
+        });
+      }
+
       await prisma.tournament.update({
         where: { id: tournamentId },
         data: { status: "CANCELED" },
       });
 
-      const embed  = new EmbedBuilder()
+      const embed = new EmbedBuilder()
         .setColor("#FF0000")
         .setTitle("❌ Tournament Cancelled ❌")
         .setDescription(`**${tournament.tournament_name}** has been cancelled.`)
