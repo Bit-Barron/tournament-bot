@@ -43,7 +43,7 @@ export class JoinTournament {
           throw new Error(`Tournament with ID ${tournamentId} not found.`);
         }
 
-        if (tournament.participants.length >= tournament.MAX_PARTICIPANTS) {
+        if (tournament.participants.length >= tournament.max_participants) {
           throw new Error("This tournament is full.");
         }
 
