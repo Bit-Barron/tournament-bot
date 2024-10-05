@@ -49,12 +49,14 @@ export class CreateTournament {
 
     interaction: CommandInteraction
   ) {
+    await interaction.deferReply();
+
     try {
       const tournament = await prisma.tournament.create({
         data: {
           tournament_name: tournamentName,
           game_type: gameType,
-          MAX_PARTICIPANTS: maxParticipants,
+          max_participants: maxParticipants,
           start_date: new Date(startDate),
           status: "PENDING",
         },
@@ -62,24 +64,27 @@ export class CreateTournament {
 
       const embed = new EmbedBuilder()
         .setColor(0x00ff00)
-        .setTitle("Tournament Created Successfully")
-        .setDescription(`A new tournament has been created!`)
+        .setTitle(`🏆 New Tournament Created! 🏆`)
+        .setDescription(`${tournamentName} has been successfully created.`)
         .addFields(
-          { name: "Tournament Name", value: tournamentName, inline: true },
-          { name: "Game Type", value: gameType, inline: true },
-          {
-            name: "Max Participants",
-            value: `${maxParticipants}`,
-            inline: true,
-          },
-          { name: "Start Date", value: startDate, inline: true },
           { name: "Tournament ID", value: `${tournament.id}`, inline: true },
-          { name: "Status", value: tournament.status, inline: true }
+          { name: "Game Type", value: gameType, inline: true },
+          { name: "Start Date", value: startDate, inline: true },
+          { name: "Status", value: "PENDING", inline: true },
+          {
+            name: "How to Join",
+            value: `Use \`/join tournament_id:${tournament.id}\` to participate!`,
+          },
+          {
+            name: "Starting the Tournament",
+            value: `Organizers can use \`/tournament-start tournament_id:${tournament.id}\` when ready to begin.`,
+          }
         )
-        .setFooter({ text: `Created by ${interaction.user.username}` })
-        .setTimestamp();
+        .setFooter({
+          text: `Good luck to all participants • ${new Date().toLocaleString()}`,
+        });
 
-      await interaction.reply({ embeds: [embed] });
+      await interaction.editReply({ embeds: [embed] });
     } catch (error) {
       console.error("Error creating tournament:", error);
 
@@ -87,14 +92,16 @@ export class CreateTournament {
         .setColor(0xff0000)
         .setTitle("Error Creating Tournament")
         .setDescription(
-          `An error occurred while creating the tournament: ${error}`
+          `An error occurred while creating the tournament: ${
+            error instanceof Error ? error.message : String(error)
+          }`
         )
         .setFooter({
           text: "Please try again or contact an administrator if the problem persists.",
         })
         .setTimestamp();
 
-      await interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+      await interaction.editReply({ embeds: [errorEmbed] });
     }
   }
 }
