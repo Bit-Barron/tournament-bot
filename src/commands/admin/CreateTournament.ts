@@ -5,8 +5,13 @@ import {
   EmbedBuilder,
 } from "discord.js";
 import prisma from "../../lib/prisma.js";
-import { GameType } from "@prisma/client";
 import { AdminOnly } from "../../guards/AdminOnly.js";
+
+enum GameType {
+  SOLO = "SOLO",
+  DUO = "DUO",
+  TRIOS = "TRIOS",
+}
 
 @Discord()
 export class CreateTournament {

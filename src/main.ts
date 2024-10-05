@@ -39,4 +39,4 @@ const main = async () => {
   await bot.login(token);
 };
 
-main();
+main().catch(console.error);

@@ -20,7 +20,7 @@ export class LeaveTournament {
     interaction: CommandInteraction
   ) {
     try {
-      const result = await prisma.$transaction(async (prisma) => {
+      const result = await prisma.$transaction(async (prisma: any) => {
         const user = await prisma.user.findUnique({
           where: { discord_id: interaction.user.id },
         });
@@ -39,7 +39,7 @@ export class LeaveTournament {
         }
 
         const isParticipant = tournament.participants.some(
-          (p) => p.id === user.id
+          (p: { id: any }) => p.id === user.id
         );
         if (!isParticipant) {
           throw new Error("You are not a participant in this tournament.");
