@@ -18,6 +18,7 @@ model User {
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   tournaments   Tournament[] @relation("UserTournaments")
+  role          UserRole    @default(USER)
 }
 
 model Tournament {
@@ -28,16 +29,14 @@ model Tournament {
   status            TournamentStatus  @default(PENDING)
   participants      User[]            @relation("UserTournaments")
   max_participants  Int
-  hosted_by         String             
+  hosted_by         String
 }
 
 model Admin {
   id String @id @default(cuid())
-
   username String @unique
   password String
 }
-
 
 enum GameType {
   SOLO
@@ -50,4 +49,9 @@ enum TournamentStatus {
   ONGOING
   CANCELED
   COMPLETED
+}
+
+enum UserRole {
+  USER
+  BANNED
 }
