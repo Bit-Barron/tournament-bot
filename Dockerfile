@@ -25,7 +25,7 @@ COPY . .
 COPY --from=deps /app/node_modules ./node_modules
 
 # Add pnpm and node_modules/.bin to PATH
-ENV PATH /app/node_modules/.bin:/usr/local/bin:$PATH
+ENV PATH /app/node_modules/.bin:$PATH
 
 ARG DATABASE_URL
 ARG TOKEN
@@ -42,6 +42,9 @@ ENV TOURNAMENT_INFO_CHANNEL=$TOURNAMENT_INFO_CHANNEL
 
 # Ensure tsconfig.json is present
 COPY tsconfig.json .
+
+# Install TypeScript globally (as a fallback)
+RUN npm install -g typescript
 
 # Run the build command
 RUN pnpm run build
