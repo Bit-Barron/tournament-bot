@@ -39,7 +39,6 @@ export class JoinTournament {
     try {
       await interaction.deferReply();
 
-      // Input validation
       if (brawlstarsId.length > 40 || userName.length > 40) {
         throw new Error(
           "Brawl Stars ID and username must be 40 characters or less."
