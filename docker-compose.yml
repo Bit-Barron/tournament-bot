@@ -1,0 +1,34 @@
+version: "3"
+
+services:
+  tournament-bot:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+        - DATABASE_URL=${DATABASE_URL}
+        - TOKEN=${TOKEN}
+        - ADMIN_ROLE=${ADMIN_ROLE}
+        - TOURNAMENT_JOIN_LEAVE_CHANNEL=${TOURNAMENT_JOIN_LEAVE_CHANNEL}
+        - TOURNAMENT_INFO_CHANNEL=${TOURNAMENT_INFO_CHANNEL}
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - TOKEN=${TOKEN}
+      - ADMIN_ROLE=${ADMIN_ROLE}
+      - TOURNAMENT_JOIN_LEAVE_CHANNEL=${TOURNAMENT_JOIN_LEAVE_CHANNEL}
+      - TOURNAMENT_INFO_CHANNEL=${TOURNAMENT_INFO_CHANNEL}
+    container_name: tournament-bot
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tournament-bot.rule=Host(`tournament-bot.barron.agency`)"
+      - "traefik.http.routers.tournament-bot.entrypoints=websecure"
+      - "traefik.http.routers.tournament-bot.tls.certresolver=letsencrypt"
+      - "traefik.http.services.tournament-bot.loadbalancer.server.port=3000"
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: false
+    name: proxy
