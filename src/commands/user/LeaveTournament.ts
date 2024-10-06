@@ -6,7 +6,7 @@ import { ChannelOnly } from "../../guards/ChanelOnly.js";
 @Discord()
 export class LeaveTournament {
   @Slash({
-    name: "leave-tournament",
+    name: "tournament-leave",
     description: "Leave a tournament",
   })
   @Guard(ChannelOnly("TOURNAMENT_JOIN_LEAVE_CHANNEL"))
