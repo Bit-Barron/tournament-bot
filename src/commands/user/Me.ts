@@ -34,7 +34,7 @@ export class MeCommand {
 
       const embed = new EmbedBuilder()
         .setColor("#0099ff")
-        .setTitle(`User Informatioasdasdasdan for ${interaction.user.username}`)
+        .setTitle(`User Information for ${interaction.user.username}`)
         .addFields(
           { name: "Username", value: user.username, inline: true },
           { name: "Brawl Stars ID", value: user.brawlstars_id, inline: true },
