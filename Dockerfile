@@ -43,9 +43,6 @@ ENV TOURNAMENT_INFO_CHANNEL=$TOURNAMENT_INFO_CHANNEL
 # Ensure tsconfig.json is present
 COPY tsconfig.json .
 
-# Run Prisma generate
-RUN npx prisma generate
-
 # Run the build command
 RUN pnpm run build
 
