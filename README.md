@@ -44,16 +44,6 @@ Tournament Bot is a Discord bot designed to streamline the organization and mana
    npm start
    ```
 
-## Usage
-
-Once the bot is running and added to your Discord server, you can use the following commands:
-
-- `/create-tournament`: Start a new tournament
-- `/register`: Register for an ongoing tournament
-- `/bracket`: View the current tournament bracket
-- `/report-result`: Report the result of a match
-
-For a full list of commands, use `/help` in your Discord server.
 
 ## Contributing
 
