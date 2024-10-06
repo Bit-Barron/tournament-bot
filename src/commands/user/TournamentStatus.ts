@@ -29,7 +29,7 @@ export class TournamentStatus {
       const id = parseInt(tournamentId, 10);
 
       if (isNaN(id) || id <= 0 || id > Number.MAX_SAFE_INTEGER) {
-        throw new Error("Invalid tournament ID");
+        throw new Error("INVALID_ID");
       }
 
       const tournament = await prisma.tournament.findUnique({
@@ -38,7 +38,7 @@ export class TournamentStatus {
       });
 
       if (!tournament) {
-        throw new Error("Tournament not found");
+        throw new Error("NOT_FOUND");
       }
 
       const embed = new EmbedBuilder()
@@ -65,10 +65,23 @@ export class TournamentStatus {
       await interaction.reply({ embeds: [embed] });
     } catch (error) {
       console.error("Error getting tournament status:", error);
+      let errorMessage = "Oops! Something went wrong. Please try again later.";
+
+      if (error instanceof Error) {
+        switch (error.message) {
+          case "INVALID_ID":
+            errorMessage =
+              "The tournament ID you entered is not valid. Please use only numbers and make sure it's not too large.";
+            break;
+          case "NOT_FOUND":
+            errorMessage =
+              "We couldn't find a tournament with that ID. Please check the ID and try again.";
+            break;
+        }
+      }
+
       await interaction.reply({
-        content: `Error: ${
-          error instanceof Error ? error.message : "An unknown error occurred"
-        }. Please ensure you've entered a valid tournament ID.`,
+        content: errorMessage,
         ephemeral: true,
       });
     }
