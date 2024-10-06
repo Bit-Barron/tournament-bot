@@ -9,7 +9,6 @@ COPY /prisma ./prisma
 RUN yarn install
 #############################################
 
-
 # Rebuild the source code only when needed
 # Stage 1
 FROM node:lts AS builder
