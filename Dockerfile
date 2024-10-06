@@ -3,21 +3,29 @@
 FROM node:lts AS deps
 WORKDIR /app
 
-COPY package.json yarn.lock ./
+# Install pnpm
+RUN npm install -g pnpm
+
+# Copy package.json and pnpm-lock.yaml (if you have one)
+COPY package.json pnpm-lock.yaml* ./
 COPY /prisma ./prisma
 
-RUN yarn install --frozen-lockfile
+# Install dependencies
+RUN pnpm install --frozen-lockfile
 
 # Rebuild the source code only when needed
 # Stage 1
 FROM node:lts AS builder
 WORKDIR /app
 
+# Install pnpm
+RUN npm install -g pnpm
+
 COPY . .
 COPY --from=deps /app/node_modules ./node_modules
 
-# Add TypeScript to PATH
-ENV PATH /app/node_modules/.bin:$PATH
+# Add pnpm and node_modules/.bin to PATH
+ENV PATH /app/node_modules/.bin:/usr/local/bin:$PATH
 
 ARG DATABASE_URL
 ARG TOKEN
@@ -35,13 +43,16 @@ ENV TOURNAMENT_INFO_CHANNEL=$TOURNAMENT_INFO_CHANNEL
 # Ensure tsconfig.json is present
 COPY tsconfig.json .
 
-RUN yarn build 
+RUN pnpm build 
 
 # Production image, copy only production files
 # Stage 2
 FROM node:lts AS prod
 
 USER root
+
+# Install pnpm
+RUN npm install -g pnpm
 
 WORKDIR /app
 
@@ -51,4 +62,4 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/.env ./.env
 COPY --from=builder /app/prisma ./prisma
 
-CMD ["yarn", "start"]
+CMD ["pnpm", "start"]
