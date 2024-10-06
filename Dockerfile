@@ -43,8 +43,8 @@ ENV TOURNAMENT_INFO_CHANNEL=$TOURNAMENT_INFO_CHANNEL
 # Ensure tsconfig.json is present
 COPY tsconfig.json .
 
-# Install TypeScript globally (as a fallback)
-RUN npm install -g typescript
+# Run Prisma generate
+RUN npx prisma generate
 
 # Run the build command
 RUN pnpm run build
@@ -64,8 +64,12 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/.env ./.env
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
 # Install only production dependencies
 RUN pnpm install --prod
+
+# Run Prisma generate again in the production stage
+RUN npx prisma generate
 
 CMD ["pnpm", "start"]
