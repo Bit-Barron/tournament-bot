@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   tournament-bot:
     build:

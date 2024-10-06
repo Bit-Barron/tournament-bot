@@ -5,7 +5,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "start": "npx prisma migrate deploy && cross-env NODE_ENV=production node dist/main.js",
+    "start": "npx prisma migrate deploy &&  node dist/main.js",
     "dev": "nodemon --ignore './**/*.json' --exec node --no-warnings --loader ts-node/esm src/main.ts",
     "prettier": "prettier --ignore-path .gitignore -w ./src",
     "build": "tsc",
