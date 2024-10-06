@@ -22,7 +22,6 @@ bot.on(
   (interaction) => void bot.executeInteraction(interaction)
 );
 
-
 bot.on("messageCreate", (message) => void bot.executeCommand(message));
 
 bot.on(
