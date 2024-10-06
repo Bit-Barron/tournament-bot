@@ -26,7 +26,7 @@ jobs:
           echo TOURNAMENT_INFO_CHANNEL=${{ secrets.TOURNAMENT_INFO_CHANNEL }} >> .env
       
       - name: Install dependencies
-        run: yarn install
+        run: npm install
 
       - name: Run Prisma migrations
         run: npx prisma migrate deploy
