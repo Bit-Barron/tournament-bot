@@ -5,7 +5,7 @@ import prisma from "../../lib/prisma.js";
 @Discord()
 export class MeCommand {
   @Slash({
-    name: "me",
+    name: "tournament-me",
     description: "Display your user information and tournament participation",
   })
   async me(interaction: CommandInteraction) {
