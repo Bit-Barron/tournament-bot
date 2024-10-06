@@ -10,7 +10,7 @@ RUN npm install -g pnpm
 COPY package.json pnpm-lock.yaml* ./
 COPY /prisma ./prisma
 
-# Install dependencies
+# Install all dependencies (including dev dependencies)
 RUN pnpm install --frozen-lockfile
 
 # Rebuild the source code only when needed
@@ -43,7 +43,8 @@ ENV TOURNAMENT_INFO_CHANNEL=$TOURNAMENT_INFO_CHANNEL
 # Ensure tsconfig.json is present
 COPY tsconfig.json .
 
-RUN pnpm build 
+# Run the build command
+RUN pnpm run build
 
 # Production image, copy only production files
 # Stage 2
@@ -57,9 +58,11 @@ RUN npm install -g pnpm
 WORKDIR /app
 
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/.env ./.env
 COPY --from=builder /app/prisma ./prisma
+
+# Install only production dependencies
+RUN pnpm install --prod
 
 CMD ["pnpm", "start"]
