@@ -1,59 +1,89 @@
 # Tournament Bot
 
-Tournament Bot is a Discord bot designed to streamline the organization and management of gaming tournaments. With features like bracket generation, match scheduling, and result tracking, it's the perfect tool for gaming communities looking to run smooth, efficient tournaments.
+A Discord bot for managing gaming tournaments with comprehensive admin and user commands.
 
 ## Features
 
-- **Bracket Generation**: Automatically create tournament brackets based on participant count and format.
-- **Match Scheduling**: Easily schedule matches and notify participants.
-- **Result Tracking**: Keep track of match results and update brackets automatically.
-- **Player Management**: Register players, manage teams, and handle seeding.
-- **Discord Integration**: Seamlessly interact with the bot through Discord commands.
+### Admin Commands
+- Cancel Tournament
+- Create Bracket
+- Create Tournament
+- End Tournament
+- Start Tournament
 
-## Getting Started
+### User Commands
+- Join Tournament
+- Leave Tournament
+- List Tournaments
+- View Personal Info (Me)
+- View Tournament Participants
+- Check Tournament Status
 
-### Prerequisites
+## Structure
 
-- Node.js (version 14.0.0 or higher)
-- A Discord account and a registered Discord application/bot
+```
+commands/
+├── admin/
+│   ├── CancelTournament.ts
+│   ├── CreateBracket.ts
+│   ├── CreateTournament.ts
+│   ├── EndTournament.ts
+│   └── StartTournament.ts
+└── user/
+    ├── JoinTournament.ts
+    ├── LeaveTournament.ts
+    ├── ListTournaments.ts
+    ├── Me.ts
+    ├── TournamentParticipants.ts
+    └── TournamentStatus.ts
 
-### Installation
+guards/
+├── AdminOnly.ts
+└── ChannelOnly.ts
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/Bit-Barron/tournament-bot.git
-   ```
+lib/
+types/
+main.ts
+.env
+.gitignore
+docker-compose.yml
+Dockerfile
+package.json
+```
 
-2. Navigate to the project directory:
-   ```
-   cd tournament-bot
-   ```
+## Setup
 
-3. Install dependencies:
-   ```
-   npm install
-   ```
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Set up your `.env` file with necessary Discord bot token and other configurations
+4. Run the bot: `npm start`
 
-4. Create a `.env` file in the root directory and add your Discord bot token:
-   ```
-   TOKEN=your_discord_bot_token_here
-   ```
+## Usage
 
-5. Start the bot:
-   ```
-   npm start
-   ```
+### Admin Commands
+- `/cancel-tournament`: Cancels an ongoing tournament
+- `/create-bracket`: Generates a bracket for a tournament
+- `/create-tournament`: Initiates a new tournament
+- `/end-tournament`: Concludes an active tournament
+- `/start-tournament`: Begins a scheduled tournament
 
+### User Commands
+- `/join-tournament`: Allows a user to enter a tournament
+- `/leave-tournament`: Removes a user from a tournament
+- `/list-tournaments`: Displays all available tournaments
+- `/me`: Shows the user's personal tournament-related information
+- `/tournament-participants`: Lists all participants in a tournament
+- `/tournament-status`: Provides the current status of a tournament
+
+## Guards
+- `AdminOnly`: Ensures certain commands are only accessible to admins
+- `ChannelOnly`: Restricts commands to specific channels
+
+## Docker Support
+The project includes a Dockerfile and docker-compose.yml for easy containerization and deployment.
 
 ## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome. Please fork the repository and submit a pull request with your changes.
 
 ## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Thanks to the Discord.js team for their excellent library
-- Inspired by the need for better tournament management in gaming communities
+[Specify your license here]
