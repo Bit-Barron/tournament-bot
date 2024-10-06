@@ -19,15 +19,21 @@ export class TournamentStatus {
     @SlashOption({
       name: "tournament_id",
       description: "The ID of the tournament to get the status of",
-      type: ApplicationCommandOptionType.Integer,
+      type: ApplicationCommandOptionType.String,
       required: true,
     })
-    tournamentId: number,
+    tournamentId: string,
     interaction: CommandInteraction
   ) {
     try {
+      const id = parseInt(tournamentId, 10);
+
+      if (isNaN(id) || id <= 0 || id > Number.MAX_SAFE_INTEGER) {
+        throw new Error("Invalid tournament ID");
+      }
+
       const tournament = await prisma.tournament.findUnique({
-        where: { id: tournamentId },
+        where: { id },
         include: { participants: true },
       });
 
@@ -60,7 +66,9 @@ export class TournamentStatus {
     } catch (error) {
       console.error("Error getting tournament status:", error);
       await interaction.reply({
-        content: `Error getting tournament status: ${error}`,
+        content: `Error: ${
+          error instanceof Error ? error.message : "An unknown error occurred"
+        }. Please ensure you've entered a valid tournament ID.`,
         ephemeral: true,
       });
     }
