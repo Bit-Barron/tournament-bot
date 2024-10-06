@@ -25,11 +25,10 @@ jobs:
           echo TOURNAMENT_JOIN_LEAVE_CHANNEL=${{ secrets.TOURNAMENT_JOIN_LEAVE_CHANNEL }} >> .env
           echo TOURNAMENT_INFO_CHANNEL=${{ secrets.TOURNAMENT_INFO_CHANNEL }} >> .env
       
-      - name: Install dependencies
-        run: npm install
-
+      - name: Build and run Docker container
+        run: |
+          docker compose build
+          docker compose up -d --force-recreate
+      
       - name: Run Prisma migrations
-        run: npx prisma migrate deploy
-
-      - name: Docker run
-        run: docker compose up -d --force-recreate --build
+        run: docker compose exec -T tournament-bot npx prisma migrate deploy

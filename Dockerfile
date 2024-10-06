@@ -43,4 +43,5 @@ COPY --from=builder /app/prisma ./prisma
 # Add this line to ensure Prisma CLI is available
 RUN npm install prisma --save-dev
 
-CMD ["npm", "start"]
+# Remove the migration step from here, as it's now in the GitHub Actions workflow
+CMD ["node", "dist/main.js"]
