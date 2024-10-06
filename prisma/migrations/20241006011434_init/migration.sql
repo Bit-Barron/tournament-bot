@@ -5,7 +5,7 @@ CREATE TYPE "GameType" AS ENUM ('SOLO', 'DUO', 'TRIOS');
 CREATE TYPE "TournamentStatus" AS ENUM ('PENDING', 'ONGOING', 'CANCELED', 'COMPLETED');
 
 -- CreateEnum
-CREATE TYPE "UserRole" AS ENUM ('USER', 'BANNED', 'KICKED');
+CREATE TYPE "UserRole" AS ENUM ('USER', 'BANNED');
 
 -- CreateTable
 CREATE TABLE "User" (
