@@ -34,18 +34,22 @@ CREATE TABLE "Tournament" (
 );
 
 -- CreateTable
+CREATE TABLE "Participation" (
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "tournamentId" INTEGER NOT NULL,
+    "joinedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Participation_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Admin" (
     "id" TEXT NOT NULL,
     "username" TEXT NOT NULL,
     "password" TEXT NOT NULL,
 
     CONSTRAINT "Admin_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "_UserTournaments" (
-    "A" INTEGER NOT NULL,
-    "B" INTEGER NOT NULL
 );
 
 -- CreateIndex
@@ -55,16 +59,13 @@ CREATE UNIQUE INDEX "User_brawlstars_id_key" ON "User"("brawlstars_id");
 CREATE UNIQUE INDEX "User_discord_id_key" ON "User"("discord_id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Participation_userId_tournamentId_key" ON "Participation"("userId", "tournamentId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Admin_username_key" ON "Admin"("username");
 
--- CreateIndex
-CREATE UNIQUE INDEX "_UserTournaments_AB_unique" ON "_UserTournaments"("A", "B");
-
--- CreateIndex
-CREATE INDEX "_UserTournaments_B_index" ON "_UserTournaments"("B");
+-- AddForeignKey
+ALTER TABLE "Participation" ADD CONSTRAINT "Participation_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_UserTournaments" ADD CONSTRAINT "_UserTournaments_A_fkey" FOREIGN KEY ("A") REFERENCES "Tournament"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_UserTournaments" ADD CONSTRAINT "_UserTournaments_B_fkey" FOREIGN KEY ("B") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Participation" ADD CONSTRAINT "Participation_tournamentId_fkey" FOREIGN KEY ("tournamentId") REFERENCES "Tournament"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
