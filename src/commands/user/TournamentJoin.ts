@@ -46,83 +46,80 @@ export class JoinTournament {
       }
 
       const result = await prisma.$transaction(async (prisma) => {
-        const existingParticipation = await prisma.tournament.findFirst({
+        const existingParticipation = await prisma.participation.findFirst({
           where: {
-            participants: {
-              some: {
-                discord_id: interaction.user.id,
+            user: {
+              discord_id: interaction.user.id,
+            },
+            tournament: {
+              status: {
+                in: ["PENDING", "ONGOING"],
               },
             },
-            status: {
-              in: ["PENDING", "ONGOING"],
-            },
           },
-          select: {
-            id: true,
-            tournament_name: true,
+          include: {
+            tournament: {
+              select: {
+                id: true,
+                tournament_name: true,
+              },
+            },
           },
         });
 
         if (existingParticipation) {
           throw new Error(
-            `You are already participating in tournament "${existingParticipation.tournament_name}" (ID: ${existingParticipation.id}). You can only join one tournament at a time.`
+            `You are already participating in tournament "${existingParticipation.tournament.tournament_name}" (ID: ${existingParticipation.tournament.id}). You can only join one tournament at a time.`
           );
         }
 
         const tournament = await prisma.tournament.findUnique({
           where: { id: tournamentId },
-          include: { participants: true },
+          include: { participations: true },
         });
 
         if (!tournament) {
           throw new Error(`Tournament with ID ${tournamentId} not found.`);
         }
 
-        if (tournament.participants.length >= tournament.max_participants) {
+        if (tournament.participations.length >= tournament.max_participants) {
           throw new Error("This tournament is full.");
         }
 
-        let user = await prisma.user.findUnique({
+        let user = await prisma.user.upsert({
           where: { discord_id: interaction.user.id },
+          update: {
+            brawlstars_id: brawlstarsId,
+            username: userName,
+          },
+          create: {
+            discord_id: interaction.user.id,
+            brawlstars_id: brawlstarsId,
+            username: userName,
+          },
         });
 
-        if (user) {
-          user = await prisma.user.update({
-            where: { discord_id: interaction.user.id },
-            data: {
-              brawlstars_id: brawlstarsId,
-              username: userName,
-            },
-          });
-        } else {
-          user = await prisma.user.create({
-            data: {
-              discord_id: interaction.user.id,
-              brawlstars_id: brawlstarsId,
-              username: userName,
-            },
-          });
-        }
-
-        const updatedTournament = await prisma.tournament.update({
-          where: { id: tournamentId },
+        const newParticipation = await prisma.participation.create({
           data: {
-            participants: {
-              connect: { id: user.id },
-            },
+            userId: user.id,
+            tournamentId: tournament.id,
           },
           include: {
-            participants: true,
+            tournament: {
+              include: {
+                participations: true,
+              },
+            },
           },
         });
 
-        return updatedTournament;
+        return newParticipation;
       });
 
-      const participantCount = result.participants.length;
+      const participantCount = result.tournament.participations.length;
 
       await interaction.editReply(
-        `Successfully joined the tournament. There are now ${participantCount} participant(s).`
+        `Successfully joined the tournament "${result.tournament.tournament_name}". There are now ${participantCount} participant(s).`
       );
     } catch (error) {
       console.error("Error joining tournament:", error);
