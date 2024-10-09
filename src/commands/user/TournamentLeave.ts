@@ -22,51 +22,42 @@ export class LeaveTournament {
   ) {
     try {
       const result = await prisma.$transaction(async (prisma) => {
-        const user = await prisma.user.findUnique({
-          where: { discord_id: interaction.user.id },
+        const participation = await prisma.participation.findFirst({
+          where: {
+            tournament: { id: tournamentId },
+            user: { discord_id: interaction.user.id },
+          },
+          include: {
+            tournament: {
+              include: {
+                participations: true,
+              },
+            },
+          },
         });
 
-        if (!user) {
-          throw new Error("You are not registered for any tournaments.");
-        }
-
-        const tournament = await prisma.tournament.findUnique({
-          where: { id: tournamentId },
-          include: { participants: true },
-        });
-
-        if (!tournament) {
-          throw new Error(`Tournament with ID ${tournamentId} not found.`);
-        }
-
-        const isParticipant = tournament.participants.some(
-          (p: { id: any }) => p.id === user.id
-        );
-        if (!isParticipant) {
+        if (!participation) {
           throw new Error("You are not a participant in this tournament.");
         }
 
-        const updatedTournament = await prisma.tournament.update({
-          where: { id: tournamentId },
-          data: {
-            participants: {
-              disconnect: { id: user.id },
-            },
-          },
-          include: { participants: true },
+        await prisma.participation.delete({
+          where: { id: participation.id },
         });
 
-        return updatedTournament;
+        return participation.tournament;
       });
 
-      const participantCount = result.participants.length;
+      const participantCount = result.participations.length - 1;
 
       await interaction.reply(
         `You have successfully left the tournament. There are now ${participantCount} participant(s) remaining.`
       );
     } catch (error) {
       console.error("Error leaving tournament:", error);
-      await interaction.reply(`Error: ${error}`);
+      await interaction.reply({
+        content: `Error: ${error}`,
+        ephemeral: true,
+      });
     }
   }
 }
