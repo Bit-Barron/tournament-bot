@@ -33,7 +33,11 @@ export class TournamentParticipants {
       const tournament = await prisma.tournament.findUnique({
         where: { id: tournamentId },
         include: {
-          participants: true,
+          participations: {
+            include: {
+              user: true,
+            },
+          },
         },
       });
 
@@ -45,11 +49,13 @@ export class TournamentParticipants {
         return;
       }
 
-      const participants = tournament.participants.map((participant, index) => {
-        return `${index + 1}. ${participant.username} (${
-          participant.brawlstars_id
-        })`;
-      });
+      const participants = tournament.participations.map(
+        (participation, index) => {
+          return `${index + 1}. ${participation.user.username} (${
+            participation.user.brawlstars_id
+          })`;
+        }
+      );
 
       const totalPages = Math.max(
         1,
