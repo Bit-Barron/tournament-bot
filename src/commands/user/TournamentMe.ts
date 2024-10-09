@@ -15,10 +15,14 @@ export class MeCommand {
       const user = await prisma.user.findUnique({
         where: { discord_id: interaction.user.id },
         include: {
-          tournaments: {
+          participations: {
             include: {
-              _count: {
-                select: { participants: true },
+              tournament: {
+                include: {
+                  _count: {
+                    select: { participations: true },
+                  },
+                },
               },
             },
           },
@@ -34,7 +38,7 @@ export class MeCommand {
 
       const embed = new EmbedBuilder()
         .setColor("#0099ff")
-        .setTitle(`User Informations for ${interaction.user.username}`)
+        .setTitle(`User Information for ${interaction.user.username}`)
         .addFields(
           { name: "Username", value: user.username, inline: true },
           { name: "Brawl Stars ID", value: user.brawlstars_id, inline: true },
@@ -45,14 +49,15 @@ export class MeCommand {
           }
         );
 
-      if (user.tournaments.length > 0) {
+      if (user.participations.length > 0) {
         embed.addFields({
           name: "Tournament Participation",
-          value: `Participating in ${user.tournaments.length} tournament(s)`,
+          value: `Participating in ${user.participations.length} tournament(s)`,
           inline: false,
         });
 
-        user.tournaments.forEach((tournament, index) => {
+        user.participations.forEach((participation, index) => {
+          const tournament = participation.tournament;
           embed.addFields(
             {
               name: `Tournament ${index + 1}`,
@@ -69,7 +74,7 @@ export class MeCommand {
             },
             {
               name: "Participants",
-              value: `${tournament._count.participants}/${tournament.max_participants}`,
+              value: `${tournament._count.participations}/${tournament.max_participants}`,
               inline: true,
             },
             { name: "Hosted By", value: tournament.hosted_by, inline: true }
