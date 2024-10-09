@@ -28,7 +28,7 @@ export class EndTournament {
     try {
       const tournament = await prisma.tournament.findUnique({
         where: { id: tournamentId },
-        include: { participants: true },
+        include: { participations: true },
       });
 
       if (!tournament) {
@@ -71,7 +71,7 @@ export class EndTournament {
           { name: "Final Status", value: "COMPLETED", inline: true },
           {
             name: "Total Participants",
-            value: `${tournament.participants.length}`,
+            value: `${tournament.participations.length}`,
             inline: true,
           },
           {

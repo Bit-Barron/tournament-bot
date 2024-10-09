@@ -33,20 +33,20 @@ export class GenerateBracket {
 
       const tournament = await prisma.tournament.findUnique({
         where: { id: parsedTournamentId },
-        include: { participants: true },
+        include: { participations: { include: { user: true } } },
       });
 
       if (!tournament) {
         throw new Error(`Tournament with ID ${parsedTournamentId} not found.`);
       }
 
-      if (tournament.participants.length < 2) {
+      if (tournament.participations.length < 2) {
         throw new Error("Not enough participants to generate a bracket.");
       }
 
-      const shuffledParticipants = this.shuffleArray([
-        ...tournament.participants,
-      ]);
+      const shuffledParticipants = this.shuffleArray(
+        tournament.participations.map((p) => p.user)
+      );
 
       const bracket =
         this.generateSingleEliminationBracket(shuffledParticipants);

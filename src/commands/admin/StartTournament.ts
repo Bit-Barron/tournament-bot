@@ -27,7 +27,7 @@ export class StartTournament {
     try {
       const tournament = await prisma.tournament.findUnique({
         where: { id: tournamentId },
-        include: { participants: true },
+        include: { participations: true },
       });
 
       if (!tournament) {
@@ -57,7 +57,7 @@ export class StartTournament {
           },
           {
             name: "Participants",
-            value: `${tournament.participants.length}`,
+            value: `${tournament.participations.length}`,
             inline: true,
           },
           { name: "Status", value: "ONGOING", inline: true }

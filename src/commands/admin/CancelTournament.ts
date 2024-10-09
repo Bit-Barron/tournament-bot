@@ -27,7 +27,7 @@ export class CancelTournament {
     try {
       const tournament = await prisma.tournament.findUnique({
         where: { id: tournamentId },
-        include: { participants: true },
+        include: { participations: true },
       });
 
       if (!tournament) {
@@ -44,6 +44,7 @@ export class CancelTournament {
         await interaction.reply({
           content: `Tournament ${tournament.tournament_name} (ID: ${tournament.id}) has already been cancelled.`,
         });
+        return;
       }
 
       await prisma.tournament.update({
@@ -61,7 +62,7 @@ export class CancelTournament {
           { name: "Final Status", value: "CANCELLED", inline: true },
           {
             name: "Affected Participants",
-            value: `${tournament.participants.length}`,
+            value: `${tournament.participations.length}`,
             inline: true,
           }
         )
