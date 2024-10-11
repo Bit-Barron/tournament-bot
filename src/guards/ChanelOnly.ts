@@ -19,6 +19,7 @@ export function ChannelOnly(
       return;
     }
 
+    
     if (interaction.channelId !== channelId) {
       console.log("Channel mismatch detected");
       await interaction.reply({
