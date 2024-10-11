@@ -23,7 +23,7 @@ jobs:
           echo TOKEN=${{ secrets.TOKEN }} >> .env
           echo ADMIN_ROLE=${{ secrets.ADMIN_ROLE }} >> .env
           echo TOURNAMENT_JOIN_LEAVE_CHANNEL_ID=${{ secrets.TOURNAMENT_JOIN_LEAVE_CHANNEL }} >> .env
-          echo TOURNAMENT_INFO_CHANNEL_ID=${{ secrets.TOURNAMENT_INFO_CHANNEL_ID }} >> .env
+          echo TOURNAMENT_INFO_CHANNEL=${{ secrets.TOURNAMENT_INFO_CHANNEL }} >> .env
           cat .env
 
       - name: Docker run
