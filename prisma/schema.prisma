@@ -1,3 +1,5 @@
+// Prisma schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,14 +10,15 @@ datasource db {
 }
 
 model User {
-  id            Int         @id @default(autoincrement())
+  id            Int            @id @default(autoincrement())
   username      String
-  brawlstars_id String      @unique
-  discord_id    String      @unique
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  brawlstars_id String         @unique
+  discord_id    String         @unique
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   participations Participation[]
-  role          UserRole    @default(USER)
+  role          UserRole       @default(USER)
+  wonRounds     TournamentRound[] @relation("RoundWinner")
 }
 
 model Tournament {
@@ -27,6 +30,7 @@ model Tournament {
   participations    Participation[]
   max_participants  Int
   hosted_by         String
+  rounds            TournamentRound[]
 }
 
 model Participation {
@@ -38,6 +42,17 @@ model Participation {
   joinedAt     DateTime   @default(now())
 
   @@unique([userId, tournamentId])
+}
+
+model TournamentRound {
+  id           Int        @id @default(autoincrement())
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  tournamentId Int
+  roundNumber  Int
+  winner       User?      @relation("RoundWinner", fields: [winnerId], references: [id])
+  winnerId     Int?
+
+  @@unique([tournamentId, roundNumber])
 }
 
 model Admin {
