@@ -22,7 +22,7 @@ jobs:
           echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
           echo TOKEN=${{ secrets.TOKEN }} >> .env
           echo ADMIN_ROLE=${{ secrets.ADMIN_ROLE }} >> .env
-          echo TOURNAMENT_JOIN_LEAVE_CHANNEL_ID=${{ secrets.TOURNAMENT_JOIN_LEAVE_CHANNEL }} >> .env
+          echo TOURNAMENT_JOIN_LEAVE_CHANNEL=${{ secrets.TOURNAMENT_JOIN_LEAVE_CHANNEL }} >> .env
           echo TOURNAMENT_INFO_CHANNEL=${{ secrets.TOURNAMENT_INFO_CHANNEL }} >> .env
           cat .env
 
