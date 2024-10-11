@@ -12,29 +12,19 @@ concurrency:
 jobs:
   build:
     runs-on: self-hosted
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Create env file
         run: |
           touch .env
           echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
           echo TOKEN=${{ secrets.TOKEN }} >> .env
           echo ADMIN_ROLE=${{ secrets.ADMIN_ROLE }} >> .env
-          echo TOURNAMENT_JOIN_LEAVE_CHANNEL=${{ secrets.TOURNAMENT_JOIN_LEAVE_CHANNEL }} >> .env
-          echo TOURNAMENT_INFO_CHANNEL=${{ secrets.TOURNAMENT_INFO_CHANNEL }} >> .env
-      
-      - name: Remove failed migration
-        run: |
-          docker run --rm -e DATABASE_URL=${{ secrets.DATABASE_URL }} postgres:14 psql ${{ secrets.DATABASE_URL }} -c "DELETE FROM _prisma_migrations WHERE migration_name = '20241005202035_init';"
-      
-      - name: Build and run Docker container
-        run: |
-          docker compose build
-          docker compose up -d --force-recreate
-      
-      - name: Run Prisma migrations
-        run: |
-          docker compose exec -T tournament-bot npx prisma migrate reset --force
-          docker compose exec -T tournament-bot npx prisma migrate deploy
+          echo TOURNAMENT_JOIN_LEAVE_CHANNEL_ID=${{ secrets.TOURNAMENT_JOIN_LEAVE_CHANNEL }} >> .env
+          echo TOURNAMENT_INFO_CHANNEL_ID=${{ secrets.TOURNAMENT_INFO_CHANNEL_ID }} >> .env
+          cat .env
+
+      - name: Docker run
+        run: docker compose up -d --force-recreate --build
