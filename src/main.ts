@@ -19,31 +19,44 @@ bot.once("ready", async () => {
 });
 
 bot.on("interactionCreate", async (interaction: Interaction) => {
+  if (!interaction.isChatInputCommand()) return;
+
   try {
-    // For slash commands, defer the reply immediately
-    if (interaction.isChatInputCommand()) {
+    // Check if the interaction has already been deferred or replied to
+    if (!interaction.deferred && !interaction.replied) {
       await interaction.deferReply();
     }
 
     await bot.executeInteraction(interaction);
   } catch (error) {
     console.error("Error handling interaction:", error);
-    if (error === 10062) {
-      console.log("Interaction expired, ignoring.");
-    } else {
-      try {
-        if (interaction.isRepliable()) {
-          await interaction.followUp({
-            content: "An error occurred while processing the command.",
-            ephemeral: true,
-          });
-        }
-      } catch (replyError) {
-        console.error("Error sending error message:", replyError);
-      }
-    }
+    await handleErrorResponse(interaction, error);
   }
 });
+
+async function handleErrorResponse(interaction: Interaction, error: any) {
+  if (error.code === 10062) {
+    console.log("Interaction expired, ignoring.");
+    return;
+  }
+
+  try {
+    if (interaction.isRepliable()) {
+      if (interaction.deferred) {
+        await interaction.editReply({
+          content: "An error occurred while processing the command.",
+        });
+      } else if (!interaction.replied) {
+        await interaction.reply({
+          content: "An error occurred while processing the command.",
+          ephemeral: true,
+        });
+      }
+    }
+  } catch (replyError) {
+    console.error("Error sending error message:", replyError);
+  }
+}
 
 bot.on("messageCreate", (message) => void bot.executeCommand(message));
 
