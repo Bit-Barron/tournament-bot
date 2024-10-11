@@ -1,5 +1,5 @@
 import { Client } from "discordx";
-import { GatewayIntentBits, Interaction } from "discord.js";
+import { GatewayIntentBits, Interaction, InteractionType } from "discord.js";
 import { log } from "console";
 import * as dotenv from "dotenv";
 import { dirname, importx } from "@discordx/importer";
@@ -19,39 +19,40 @@ bot.once("ready", async () => {
 });
 
 bot.on("interactionCreate", async (interaction: Interaction) => {
-  if (!interaction.isChatInputCommand()) return;
+  if (interaction.type !== InteractionType.ApplicationCommand) return;
 
   try {
-    // Check if the interaction has already been deferred or replied to
     if (!interaction.deferred && !interaction.replied) {
-      await interaction.deferReply();
+      await interaction.deferReply({ ephemeral: false }).catch(() => {
+        // If deferring fails, we'll try to execute the interaction anyway
+        log("Failed to defer reply, attempting to execute interaction anyway");
+      });
     }
 
     await bot.executeInteraction(interaction);
   } catch (error) {
-    console.error("Error handling interaction:", error);
     await handleErrorResponse(interaction, error);
   }
 });
 
 async function handleErrorResponse(interaction: Interaction, error: any) {
+  console.error("Error handling interaction:", error);
+
   if (error.code === 10062) {
-    console.log("Interaction expired, ignoring.");
+    log("Interaction expired, ignoring.");
     return;
   }
 
+  if (!interaction.isRepliable()) return;
+
+  const errorMessage =
+    "An error occurred while processing the command. Please try again later.";
+
   try {
-    if (interaction.isRepliable()) {
-      if (interaction.deferred) {
-        await interaction.editReply({
-          content: "An error occurred while processing the command.",
-        });
-      } else if (!interaction.replied) {
-        await interaction.reply({
-          content: "An error occurred while processing the command.",
-          ephemeral: true,
-        });
-      }
+    if (interaction.deferred) {
+      await interaction.editReply({ content: errorMessage });
+    } else if (!interaction.replied) {
+      await interaction.reply({ content: errorMessage, ephemeral: true });
     }
   } catch (replyError) {
     console.error("Error sending error message:", replyError);
