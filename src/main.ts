@@ -28,18 +28,15 @@ bot.on(
   "messageReactionAdd",
   (reaction, user) => void bot.executeReaction(reaction, user)
 );
+
 const main = async () => {
-  try {
-    await importx(`${dirname(import.meta.url)}/{events,commands}/**/*.{ts,js}`);
+  await importx(`${dirname(import.meta.url)}/{events,commands}/**/*.{ts,js}`);
 
-    if (!token) {
-      throw new Error("Could not find TOKEN in your environment");
-    }
-
-    await bot.login(token);
-  } catch (error) {
-    console.error("An error occurred:", error);
+  if (!token) {
+    throw Error("Could not find TOKEN in your environment");
   }
+
+  await bot.login(token);
 };
 
 main().catch(console.error);
